@@ -54,6 +54,11 @@ if __name__ == "__main__":
     ensure_directories_exist(downloaded_dir, pgns_dir)
 
     for week in range(total_weeks + 1):
+        pgn_file_path = pgns_dir / f"twic{920 + week}.pgn"
+        if pgn_file_path.exists():
+            continue
+
+        print(f"Processing twic{920 + week}.pgn")
         zip_filename = f"twic{920 + week}g.zip"
         zip_url = f"https://theweekinchess.com/zips/{zip_filename}"
         zip_path = downloaded_dir / zip_filename
