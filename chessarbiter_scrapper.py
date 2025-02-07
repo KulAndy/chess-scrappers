@@ -129,7 +129,7 @@ def searchPGN(tournament, browser, year):
     href = tournament["href"]
     JS_PATTERN = r"</?\w+|function|if|var|let|;|\(.*\)"
     EMPTY_YEAR_PATTERN = r"(1899|\?\?\?\?)[.-]\.[.-]\."
-    if "http://chessarbiter.com/turnieje/open.php?" in href:
+    if "https://chessarbiter.com/turnieje/open.php?" in href:
         try:
             browser.get(href)
             links = browser.find_elements(By.TAG_NAME, "a")
@@ -412,7 +412,7 @@ def main():
     for i in range(maxYear, minYear - 1, -1):
         print(f"Pobieranie turniejów z roku {i}")
         res = requests.get(
-            f"http://chessarbiter.com/turnieje.php?rok={i}&miesiac=0&idz=Wy%C5%9Bwietl"
+            f"https://chessarbiter.com/turnieje.php?rok={i}&miesiac=0&idz=Wy%C5%9Bwietl"
         )
 
         try:

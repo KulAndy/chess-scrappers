@@ -221,7 +221,7 @@ def main():
                     browser.get(
                         f"https://www.chessmanager.com/pl/tournaments/finished?country={country}&city=&city_radius=0&offset={i * 50}")
                     tournaments = [link.get_attribute("href") for link in browser.find_elements(By.TAG_NAME, "a")
-                                   if re.match(r"https://www\.chessmanager\.com/../tournaments/\d+",
+                                   if re.match(r"https://www\.chessmanager\.com/[\w-]*/tournaments/\d+",
                                                link.get_attribute("href"))]
                     for tournament in tournaments:
                         browser.get(tournament)
