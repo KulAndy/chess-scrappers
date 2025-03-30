@@ -204,7 +204,7 @@ def main():
 
     ]
 
-    with open("chessmanager.pgn","w") as output:
+    with open("chessmanager.pgn", "w") as output:
         for country in countries:
             try:
                 browser.get(f"https://www.chessmanager.com/pl/tournaments/finished?country={country}")
@@ -226,18 +226,23 @@ def main():
                     for tournament in tournaments:
                         browser.get(tournament)
                         try:
-                            lichess_links = [link.get_attribute("href") for link in browser.find_elements(By.TAG_NAME, "a")
-                                             if "lichess.org/broadcast/" in link.get_attribute("href")]
-                            livechess_links = [link.get_attribute("href") for link in
-                                               browser.find_elements(By.TAG_NAME, "a")
-                                               if "view.livechesscloud.com" in link.get_attribute("href")]
+                            links = browser.find_elements(By.TAG_NAME, "a")
+                            lichess_links = [link.get_attribute("href") for link in links
+                                             if link.get_attribute(
+                                    "href") is not None and "lichess.org/broadcast/" in link.get_attribute(
+                                    "href")]
+                            livechess_links = [link.get_attribute("href") for link in links
+                                               if
+                                               link.get_attribute(
+                                                   "href") is not None and "view.livechesscloud.com" in link.get_attribute(
+                                                   "href")]
                             for lichess_link in lichess_links:
                                 print("lichess: " + lichess_link)
                                 lichess_download(lichess_link, browser)
 
                             for livechess_link in livechess_links:
-                                    print("livechess: " + livechess_link)
-                                    output.write(scrap_livechess(livechess_link))
+                                print("livechess: " + livechess_link)
+                                output.write(scrap_livechess(livechess_link))
                         except TypeError:
                             pass
             except:
