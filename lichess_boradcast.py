@@ -2,6 +2,7 @@ import os
 from urllib.parse import urlparse
 import requests
 import zstandard as zstd
+import re
 
 DOWNLOAD_DIR = "lichess_downloaded"
 os.makedirs(DOWNLOAD_DIR, exist_ok=True)
@@ -35,7 +36,6 @@ for line in content.splitlines():
     except Exception as e:
         print(f"Failed to download {url}: {e}")
 
-
 for filename in os.listdir(DOWNLOAD_DIR):
     if not filename.endswith(".pgn.zst"):
         continue
@@ -46,14 +46,40 @@ for filename in os.listdir(DOWNLOAD_DIR):
 
     if os.path.exists(output_path):
         print(f"Already decompressed: {output_filename}")
-        continue
+    else:
+        print(f"Decompressing: {filename} -> {output_filename}")
+        try:
+            with open(src_path, "rb") as compressed:
+                dctx = zstd.ZstdDecompressor()
+                with open(output_path, "wb") as decompressed:
+                    dctx.copy_stream(compressed, decompressed)
+            print(f"Decompressed: {output_path}")
+        except Exception as e:
+            print(f"Failed to decompress {filename}: {e}")
 
-    print(f"Decompressing: {filename} -> {output_filename}")
+    print(f"Fixing Date tags in: {output_filename}")
     try:
-        with open(src_path, "rb") as compressed:
-            dctx = zstd.ZstdDecompressor()
-            with open(output_path, "wb") as decompressed:
-                dctx.copy_stream(compressed, decompressed)
-        print(f"Decompressed: {output_path}")
+        year_month_match = re.search(r"(\d{4})-(\d{2})", filename)
+        if not year_month_match:
+            print(f"Could not extract date from filename: {filename}")
+            continue
+
+        year, month = year_month_match.groups()
+
+        with open(output_path, "r", encoding="utf-8") as f:
+            content = f.read()
+
+        new_content = re.sub(
+            r'\[Date "(\?{4}\.\?{2}\.\?{2})"\]',
+            f'[Date "{year}.{month}.??"]',
+            content
+        )
+
+        if new_content != content:
+            with open(output_path, "w", encoding="utf-8") as f:
+                f.write(new_content)
+            print(f"Updated Date tags in: {output_filename}")
+        else:
+            print(f"No [Date \"????.??.??\"] tags found in: {output_filename}")
     except Exception as e:
-        print(f"Failed to decompress {filename}: {e}")
+        print(f"Failed to update Date tags in {output_filename}: {e}")
