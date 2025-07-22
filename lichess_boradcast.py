@@ -1,85 +1,110 @@
 import os
-from urllib.parse import urlparse
+import re
 import requests
 import zstandard as zstd
-import re
+import chess.pgn
+from io import StringIO
+from urllib.parse import urlparse
+from concurrent.futures import ProcessPoolExecutor
 
 DOWNLOAD_DIR = "lichess_downloaded"
-os.makedirs(DOWNLOAD_DIR, exist_ok=True)
 PGN_DIR = "lichess_pgns"
+MAX_WORKERS = 6
+os.makedirs(DOWNLOAD_DIR, exist_ok=True)
 os.makedirs(PGN_DIR, exist_ok=True)
 
-url = "https://database.lichess.org/broadcast/list.txt"
-response = requests.get(url)
-response.raise_for_status()
-content = response.text
 
-for line in content.splitlines():
-    url = line.strip()
-    if not url:
-        continue
+def download_list():
+    url = "https://database.lichess.org/broadcast/list.txt"
+    response = requests.get(url)
+    response.raise_for_status()
+    return response.text.strip().splitlines()
 
+
+def download_file(url):
     filename = os.path.basename(urlparse(url).path)
     dest_path = os.path.join(DOWNLOAD_DIR, filename)
 
     if os.path.exists(dest_path):
-        print(f"Already downloaded: {filename}")
-        continue
+        print(f"[SKIP] Already downloaded: {filename}")
+        return
 
-    print(f"Downloading: {filename} ...")
+    print(f"[DOWNLOAD] {filename}")
     try:
         response = requests.get(url)
         response.raise_for_status()
-        with open(dest_path, "wb") as f_out:
-            f_out.write(response.content)
-        print(f"Saved: {dest_path}")
+        with open(dest_path, "wb") as f:
+            f.write(response.content)
+        print(f"[SAVED] {dest_path}")
     except Exception as e:
-        print(f"Failed to download {url}: {e}")
+        print(f"[ERROR] Failed to download {url}: {e}")
 
-for filename in os.listdir(DOWNLOAD_DIR):
+
+def decompress_and_fix(filename):
     if not filename.endswith(".pgn.zst"):
-        continue
+        return
 
     src_path = os.path.join(DOWNLOAD_DIR, filename)
     output_filename = filename.replace(".zst", "")
     output_path = os.path.join(PGN_DIR, output_filename)
 
-    if os.path.exists(output_path):
-        print(f"Already decompressed: {output_filename}")
-    else:
-        print(f"Decompressing: {filename} -> {output_filename}")
-        try:
+    match = re.search(r"(\d{4})-(\d{2})", filename)
+    if not match:
+        print(f"[SKIP] No date info in filename: {filename}")
+        return
+
+    year, month = match.groups()
+    default_date = f"{year}.{month}.??"
+
+    try:
+        if not os.path.exists(output_path):
+            print(f"[DECOMPRESS] {filename}")
             with open(src_path, "rb") as compressed:
                 dctx = zstd.ZstdDecompressor()
                 with open(output_path, "wb") as decompressed:
                     dctx.copy_stream(compressed, decompressed)
-            print(f"Decompressed: {output_path}")
-        except Exception as e:
-            print(f"Failed to decompress {filename}: {e}")
-
-    print(f"Fixing Date tags in: {output_filename}")
-    try:
-        year_month_match = re.search(r"(\d{4})-(\d{2})", filename)
-        if not year_month_match:
-            print(f"Could not extract date from filename: {filename}")
-            continue
-
-        year, month = year_month_match.groups()
+            print(f"[DONE] Decompressed: {output_path}")
+        else:
+            print(f"[SKIP] Already decompressed: {output_filename}")
 
         with open(output_path, "r", encoding="utf-8") as f:
-            content = f.read()
+            raw_content = f.read()
 
-        new_content = re.sub(
-            r'\[Date "(\?{4}\.\?{2}\.\?{2})"\]',
-            f'[Date "{year}.{month}.??"]',
-            content
-        )
+        pgn_io = StringIO(raw_content)
+        games = []
+        while True:
+            game = chess.pgn.read_game(pgn_io)
+            if game is None:
+                break
+            games.append(game)
 
-        if new_content != content:
-            with open(output_path, "w", encoding="utf-8") as f:
-                f.write(new_content)
-            print(f"Updated Date tags in: {output_filename}")
-        else:
-            print(f"No [Date \"????.??.??\"] tags found in: {output_filename}")
+        print(f"[INFO] {output_filename}: {len(games)} games")
+
+        updated_pgn = ""
+        for game in games:
+            headers = game.headers
+            if "Date" not in headers or headers["Date"] in {"????.??.??", "0000.00.00", ""}:
+                headers["Date"] = default_date
+            updated_pgn += str(game).strip() + "\n\n"
+
+        with open(output_path, "w", encoding="utf-8") as f:
+            f.write(updated_pgn.strip() + "\n")
+
+        print(f"[FIXED] {output_filename}")
+
     except Exception as e:
-        print(f"Failed to update Date tags in {output_filename}: {e}")
+        print(f"[ERROR] {filename}: {e}")
+
+
+def main():
+    urls = download_list()
+    for url in urls:
+        download_file(url.strip())
+
+    files = os.listdir(DOWNLOAD_DIR)
+    with ProcessPoolExecutor(max_workers=MAX_WORKERS) as executor:
+        executor.map(decompress_and_fix, files)
+
+
+if __name__ == '__main__':
+    main()
