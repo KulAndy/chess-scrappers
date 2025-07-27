@@ -1,44 +1,43 @@
+from threading import Semaphore
 from urllib.parse import urlparse
-
 import requests
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 from unidecode import unidecode
 
+download_semaphore = Semaphore(2)
+
 
 def lichess_download(link, browser):
-    try:
-        browser.get(link + "#games")
-
-        wait = WebDriverWait(browser, 1)
-        games = wait.until(
-            EC.presence_of_all_elements_located((By.CLASS_NAME, "mini-game"))
-        )
-
-        if games:
-            games[0].click()
-
-            share = wait.until(EC.element_to_be_clickable((By.CLASS_NAME, "share")))
-            share.click()
-
-            download_all_rounds = wait.until(
-                EC.element_to_be_clickable(
-                    (By.PARTIAL_LINK_TEXT, "POBIERZ WSZYSTKIE RUNDY")
-                )
-            )
-            download_all_rounds.click()
-    except:
+    with download_semaphore:
         try:
+            browser.get(link + "#games")
             wait = WebDriverWait(browser, 1)
-            download_all_rounds = wait.until(
-                EC.element_to_be_clickable(
-                    (By.PARTIAL_LINK_TEXT, "DOWNLOAD ALL ROUNDS")
-                )
+            games = wait.until(
+                EC.presence_of_all_elements_located((By.CLASS_NAME, "mini-game"))
             )
-            download_all_rounds.click()
+            if games:
+                games[0].click()
+                share = wait.until(EC.element_to_be_clickable((By.CLASS_NAME, "share")))
+                share.click()
+                download_all_rounds = wait.until(
+                    EC.element_to_be_clickable(
+                        (By.PARTIAL_LINK_TEXT, "POBIERZ WSZYSTKIE RUNDY")
+                    )
+                )
+                download_all_rounds.click()
         except:
-            print(f"Error processing link: {link}")
+            try:
+                wait = WebDriverWait(browser, 1)
+                download_all_rounds = wait.until(
+                    EC.element_to_be_clickable(
+                        (By.PARTIAL_LINK_TEXT, "DOWNLOAD ALL ROUNDS")
+                    )
+                )
+                download_all_rounds.click()
+            except:
+                print(f"Error processing link: {link}")
 
 
 def scrap_livechess(url):
@@ -92,7 +91,6 @@ def json2pgn(data, metadata):
 [White "{white or "N, N"}"]
 [Black "{black or "N, N"}"]
 [Result "{metadata["result"] or "*"}"]
-
 {moves}
 """
     return pgn
