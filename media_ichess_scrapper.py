@@ -77,11 +77,7 @@ def collect_archived_tournaments(browser, timeout_minutes=30):
     browser.find_element(By.TAG_NAME, "body").click()
     time.sleep(1)
 
-    while True:
-        if time.time() - start_time > timeout_seconds:
-            print("Scroll timeout reached")
-            break
-
+    while time.time() - start_time < timeout_seconds:
         previous_count = len(collected_links)
 
         # === HUMAN SCROLLING ===
@@ -99,7 +95,7 @@ def collect_archived_tournaments(browser, timeout_minutes=30):
 
         for link in links:
             href = link.get_attribute("href")
-            if href and re.search(r"https://media.idchess.com/(en/)?tournaments/[a-z]/.+", href):
+            if href and re.search(r"https://media.idchess.com/(en/)?tournaments/[a-zA-Z\d]+/.+", href):
                 collected_links.add(href)
 
         if len(collected_links) == previous_count:
