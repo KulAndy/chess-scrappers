@@ -90,7 +90,7 @@ def collect_archived_tournaments(browser, timeout_minutes=30):
         # Collect links
         links = browser.find_elements(
             By.XPATH,
-            "//a[contains(@href, '/en/tournaments/') and not(contains(@href, '/archived'))]"
+            "//a[contains(@href, '/tournaments/') and not(contains(@href, '/archived'))]"
         )
 
         for link in links:
