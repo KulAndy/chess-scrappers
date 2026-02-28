@@ -1,5 +1,8 @@
 import os
 import re
+from datetime import datetime, date
+from pathlib import Path
+
 import requests
 import zstandard as zstd
 import chess.pgn
@@ -46,7 +49,7 @@ def decompress_and_fix(filename):
 
     src_path = os.path.join(DOWNLOAD_DIR, filename)
     output_filename = filename.replace(".zst", "")
-    output_path = os.path.join(PGN_DIR, output_filename)
+    output_path = Path(PGN_DIR) /  output_filename
 
     match = re.search(r"(\d{4})-(\d{2})", filename)
     if not match:
@@ -56,6 +59,7 @@ def decompress_and_fix(filename):
     year, month = match.groups()
     default_date = f"{year}.{month}.??"
 
+    tmp_path = os.path.join(PGN_DIR, f"tmp_{output_filename}")
     try:
         if not os.path.exists(output_path):
             print(f"[DECOMPRESS] {filename}")
@@ -70,6 +74,12 @@ def decompress_and_fix(filename):
         with open(output_path, "r", encoding="utf-8") as f:
             raw_content = f.read()
 
+        timestamp = output_path.stat().st_mtime
+
+        file_date = datetime.fromtimestamp(timestamp).date()
+        if file_date < date.today():
+            return
+
         pgn_io = StringIO(raw_content)
         games = []
         while True:
@@ -80,20 +90,22 @@ def decompress_and_fix(filename):
 
         print(f"[INFO] {output_filename}: {len(games)} games")
 
-        updated_pgn = ""
-        for game in games:
-            headers = game.headers
-            if "Date" not in headers or headers["Date"] in {"????.??.??", "0000.00.00", ""}:
-                headers["Date"] = default_date
-            updated_pgn += str(game).strip() + "\n\n"
+        with open(tmp_path, "w", encoding="utf-8") as tmp_file:
+            for game in games:
+                headers = game.headers
+                if "Date" not in headers or headers["Date"] in {"????.??.??", "0000.00.00", ""}:
+                    headers["Date"] = default_date
+                tmp_file.write(str(game).strip() + "\n\n")
+                tmp_file.flush()
 
-        with open(output_path, "w", encoding="utf-8") as f:
-            f.write(updated_pgn.strip() + "\n")
-
+        os.replace(tmp_path, output_path)
         print(f"[FIXED] {output_filename}")
 
     except Exception as e:
         print(f"[ERROR] {filename}: {e}")
+    finally:
+        if os.path.exists(tmp_path):
+            os.remove(tmp_path)
 
 
 def main():
