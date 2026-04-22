@@ -1,9 +1,11 @@
 import os
 import re
 import time
+import traceback
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.options import Options
 
 from parser import lichess_download, scrap_livechess
 
@@ -12,7 +14,13 @@ def main():
     download_directory = os.path.expanduser("~/Pobrane")
     if not os.path.exists(download_directory):
         os.makedirs(download_directory)
-    browser = webdriver.Chrome()
+    options = Options()
+    options.page_load_strategy = "eager"
+    options.add_argument(
+        "user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/122.0 Safari/537.36"
+    )
+
+    browser = webdriver.Chrome(options=options)
     countries = [
         "POL",
         # "ALB",
@@ -217,7 +225,7 @@ def main():
                 except ValueError:
                     last_elem_value = 1
 
-                for i in range(last_elem_value):
+                for i in range(last_elem_value+1):
                     browser.get(
                         f"https://www.chessmanager.com/pl/tournaments/finished?country={country}&city=&city_radius=0&offset={i * 50}")
                     tournaments = [link.get_attribute("href") for link in browser.find_elements(By.TAG_NAME, "a")
@@ -225,6 +233,7 @@ def main():
                                                link.get_attribute("href"))]
                     for tournament in tournaments:
                         browser.get(tournament)
+                        time.sleep(0.1)
                         try:
                             links = browser.find_elements(By.TAG_NAME, "a")
                             lichess_links = [link.get_attribute("href") for link in links
@@ -243,17 +252,22 @@ def main():
                             for livechess_link in livechess_links:
                                 print("livechess: " + livechess_link)
                                 output.write(scrap_livechess(livechess_link))
-                        except TypeError:
-                            pass
-            except:
-                pass
+                        except TypeError as e:
+                            print(e)
+                            traceback.print_exc()
+
+                    time.sleep(5)
+            except Exception as e:
+                print(e)
+                traceback.print_exc()
         while check_for_crdownload_files(download_directory):
             print("Waiting for downloads to complete...")
             time.sleep(10)
         try:
             input("chessmanager czeka na kliknięcie klawisza")
-        except:
-            pass
+        except Exception as e:
+            print(e)
+            traceback.print_exc()
     browser.quit()
 
 
