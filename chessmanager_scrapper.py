@@ -6,6 +6,7 @@ import traceback
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
+import undetected_chromedriver as uc
 
 from parser import lichess_download, scrap_livechess
 
@@ -19,8 +20,14 @@ def main():
     options.add_argument(
         "user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/122.0 Safari/537.36"
     )
-
-    browser = webdriver.Chrome(options=options)
+    options.add_argument("--start-maximized")
+    options.add_argument("--disable-blink-features=AutomationControlled")
+    options.add_argument("--disable-javascript")
+    # browser = webdriver.Chrome(options=options)
+    browser = uc.Chrome(
+        version_main=147,
+        options=options
+    )
     countries = [
         "POL",
         # "ALB",
@@ -212,7 +219,7 @@ def main():
 
     ]
 
-    with open("chessmanager.pgn", "w") as output:
+    with open("chessmanager.pgn", "a") as output:
         for country in countries:
             try:
                 browser.get(f"https://www.chessmanager.com/pl/tournaments/finished?country={country}")
@@ -225,7 +232,7 @@ def main():
                 except ValueError:
                     last_elem_value = 1
 
-                for i in range(last_elem_value+1):
+                for i in range(last_elem_value + 1):
                     browser.get(
                         f"https://www.chessmanager.com/pl/tournaments/finished?country={country}&city=&city_radius=0&offset={i * 50}")
                     tournaments = [link.get_attribute("href") for link in browser.find_elements(By.TAG_NAME, "a")
@@ -233,7 +240,7 @@ def main():
                                                link.get_attribute("href"))]
                     for tournament in tournaments:
                         browser.get(tournament)
-                        time.sleep(0.1)
+                        time.sleep(3)
                         try:
                             links = browser.find_elements(By.TAG_NAME, "a")
                             lichess_links = [link.get_attribute("href") for link in links
@@ -256,13 +263,16 @@ def main():
                             print(e)
                             traceback.print_exc()
 
-                    time.sleep(5)
+                    time.sleep(6)
+
             except Exception as e:
                 print(e)
                 traceback.print_exc()
+
         while check_for_crdownload_files(download_directory):
             print("Waiting for downloads to complete...")
-            time.sleep(10)
+            time.sleep(10)  # Dodatkowe zabezpieczenie
+
         try:
             input("chessmanager czeka na kliknięcie klawisza")
         except Exception as e:

@@ -22,42 +22,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.edge.options import Options as EdgeOptions
 from selenium.webdriver.firefox.options import Options as FirefoxOptions
 
+from Throttle import Throttle
 from parser import lichess_download, scrap_livechess
-
-
-class Throttle:
-    """
-    klasa do dławienia programu
-    """
-
-    def __init__(self, rate):
-        self.__consume_lock = Lock()
-        self.rate = rate
-        self.tokens = 0
-        self.last = None
-
-    def consume(self, amount=1):
-        """
-        na podstawie liczby tokenów określa się czy można działać, czy czekać
-        """
-        with self.__consume_lock:
-            now = time.time()
-
-            if self.last is None:
-                self.last = now
-
-            elapsed = now - self.last
-
-            if elapsed * self.rate > 1:
-                self.tokens += elapsed * self.rate
-                self.last = now
-
-            self.tokens = min(self.rate, self.tokens)
-
-            if self.tokens >= amount:
-                self.tokens -= amount
-                return amount
-            return 0
 
 
 def manual_download(url, browser, found_links, year):
@@ -154,7 +120,7 @@ def searchPGN(tournament, browser, year):
                                 )
                             else:
                                 if not re.search(
-                                    EMPTY_YEAR_PATTERN, remoteFile.text
+                                        EMPTY_YEAR_PATTERN, remoteFile.text
                                 ) and not re.search(
                                     JS_PATTERN,
                                     remoteFile.text,
@@ -174,8 +140,8 @@ def searchPGN(tournament, browser, year):
                             )
                             if overChessarbiterUrl.search(linkUrl):
                                 if not re.search(
-                                    JS_PATTERN,
-                                    remoteFile.text,
+                                        JS_PATTERN,
+                                        remoteFile.text,
                                 ):
                                     found_links.append(
                                         re.sub(
@@ -231,10 +197,6 @@ def searchPGN(tournament, browser, year):
     return found_links
 
 
-
-
-
-
 def worker(work_queue, results_queue, throttle, chooseBrowser, year):
     # switch-case w pythonie
     try:
@@ -269,8 +231,8 @@ def worker(work_queue, results_queue, throttle, chooseBrowser, year):
                     results_queue.put(err)
                 else:
                     if (
-                        isinstance(result, (list, tuple, np.ndarray))
-                        and len(result) > 0
+                            isinstance(result, (list, tuple, np.ndarray))
+                            and len(result) > 0
                     ):
                         results_queue.put(result)
                 finally:
@@ -482,7 +444,6 @@ def main():
 
         except Exception as err:
             print(err)
-
 
 
 # wywołanie jako samodzielny plik, a nie moduł
