@@ -2,272 +2,293 @@ import os
 import re
 import time
 import traceback
+from io import TextIOWrapper
 
-from selenium import webdriver
-from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 import undetected_chromedriver as uc
+from selenium.webdriver.common.by import By
 
 from parser import lichess_download, scrap_livechess
 
+download_directory = os.path.expanduser("~/Pobrane")
+os.makedirs(download_directory, exist_ok=True)
 
-def main():
-    download_directory = os.path.expanduser("~/Pobrane")
-    if not os.path.exists(download_directory):
-        os.makedirs(download_directory)
-    options = Options()
-    options.page_load_strategy = "eager"
-    options.add_argument(
-        "user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/122.0 Safari/537.36"
-    )
-    options.add_argument("--start-maximized")
-    options.add_argument("--disable-blink-features=AutomationControlled")
-    options.add_argument("--disable-javascript")
-    # browser = webdriver.Chrome(options=options)
-    browser = uc.Chrome(
-        version_main=147,
-        options=options
-    )
-    countries = [
-        "POL",
-        # "ALB",
-        # "ALG",
-        # "AND",
-        # "ANG",
-        # "ARG",
-        # "ARM",
-        # "ARU",
-        # "AUS",
-        # "AUT",
-        # "AZE",
-        # "BAH",
-        # "BRN",
-        # "BAN",
-        # "BAR",
-        # "BLR",
-        # "BEL",
-        # "BIH",
-        # "BIZ",
-        # "BOL",
-        # "BOT",
-        # "BRA",
-        # "IVB",
-        # "BRU",
-        # "BUL",
-        # "BUR",
-        # "BDI",
-        # "CAM",
-        # "CMR",
-        # "CAN",
-        # "CAF",
-        # "CHI",
-        # "CHN",
-        # "TPE",
-        # "COL",
-        # "COM",
-        # "CGO",
-        # "CRC",
-        # "CRO",
-        # "CUB",
-        # "CYP",
-        # "CZE",
-        # "DEN",
-        # "DOM",
-        # "ECU",
-        # "EGY",
-        # "ESA",
-        # "ENG",
-        # "EST",
-        # "ETH",
-        # "FAI",
-        # "FID",
-        # "FIJ",
-        # "FIN",
-        # "MKD",
-        # "FRA",
-        # "GAB",
-        # "GAM",
-        # "GBR",
-        # "GEO",
-        # "GER",
-        # "GHA",
-        # "GRE",
-        # "GUM",
-        # "GUA",
-        # "GCI",
-        # "GUY",
-        # "HAI",
-        # "HON",
-        # "HKG",
-        # "HUN",
-        # "ISL",
-        # "IND",
-        # "INA",
-        # "IRI",
-        # "IRQ",
-        # "IRL",
-        # "ISR",
-        # "ITA",
-        # "IOM",
-        # "CIV",
-        # "JAM",
-        # "JPN",
-        # "JCI",
-        # "JOR",
-        # "KAZ",
-        # "KEN",
-        # "KGZ",
-        # "KOS",
-        # "KUW",
-        # "LAO",
-        # "LAT",
-        # "LIB",
-        # "LES",
-        # "LBA",
-        # "LIE",
-        # "LTU",
-        # "LUX",
-        # "MAC",
-        # "MAD",
-        # "MAW",
-        # "MAS",
-        # "MDV",
-        # "MLI",
-        # "MLT",
-        # "MTN",
-        # "MRI",
-        # "MEX",
-        # "MDA",
-        # "MNC",
-        # "MGL",
-        # "MNE",
-        # "MAR",
-        # "MOZ",
-        # "MYA",
-        # "NAM",
-        # "NEP",
-        # "NED",
-        # "AHO",
-        # "NZL",
-        # "NCA",
-        # "NGR",
-        # "NOR",
-        # "OMA",
-        # "PAK",
-        # "PLW",
-        # "PLE",
-        # "PAN",
-        # "PNG",
-        # "PAR",
-        # "PER",
-        # "PHI",
-        # "POR",
-        # "PUR",
-        # "QAT",
-        # "ROU",
-        # "RUS",
-        # "RWA",
-        # "SMR",
-        # "STP",
-        # "KSA",
-        # "SCO",
-        # "SEN",
-        # "SRB",
-        # "SEY",
-        # "SLE",
-        # "SIN",
-        # "SGP",
-        # "SVK",
-        # "SLO",
-        # "SOL",
-        # "SOM",
-        # "SSD",
-        # "RSA",
-        # "KOR",
-        # "ESP",
-        # "SRI",
-        # "SUD",
-        # "SUR",
-        # "SWZ",
-        # "SWE",
-        # "SUI",
-        # "SYR",
-        # "TJK",
-        # "TAN",
-        # "THA",
-        # "TLS",
-        # "TOG",
-        # "TTO",
-        # "TUN",
-        # "TUR",
-        # "TKM",
-        # "UGA",
-        # "UKR",
-        # "UAE",
-        # "USA",
-        # "URU",
-        # "ISV",
-        # "UZB",
-        # "VEN",
-        # "VIE",
-        # "WLS",
-        # "YEM",
-        # "ZAM",
-        # "ZIM",
-        # "CFR",
-        # "FQE"
+options = Options()
+options.page_load_strategy = "eager"
+options.add_argument(
+    "user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/122.0 Safari/537.36"
+)
+options.add_argument("--start-maximized")
+options.add_argument("--disable-blink-features=AutomationControlled")
+options.add_argument("--disable-javascript")
+browser = uc.Chrome(
+    version_main=149,
+    options=options
+)
 
+countries = [
+    "POL",
+    # "ALB",
+    # "ALG",
+    # "AND",
+    # "ANG",
+    # "ARG",
+    # "ARM",
+    # "ARU",
+    # "AUS",
+    # "AUT",
+    # "AZE",
+    # "BAH",
+    # "BRN",
+    # "BAN",
+    # "BAR",
+    # "BLR",
+    # "BEL",
+    # "BIH",
+    # "BIZ",
+    # "BOL",
+    # "BOT",
+    # "BRA",
+    # "IVB",
+    # "BRU",
+    # "BUL",
+    # "BUR",
+    # "BDI",
+    # "CAM",
+    # "CMR",
+    # "CAN",
+    # "CAF",
+    # "CHI",
+    # "CHN",
+    # "TPE",
+    # "COL",
+    # "COM",
+    # "CGO",
+    # "CRC",
+    # "CRO",
+    # "CUB",
+    # "CYP",
+    # "CZE",
+    # "DEN",
+    # "DOM",
+    # "ECU",
+    # "EGY",
+    # "ESA",
+    # "ENG",
+    # "EST",
+    # "ETH",
+    # "FAI",
+    # "FID",
+    # "FIJ",
+    # "FIN",
+    # "MKD",
+    # "FRA",
+    # "GAB",
+    # "GAM",
+    # "GBR",
+    # "GEO",
+    # "GER",
+    # "GHA",
+    # "GRE",
+    # "GUM",
+    # "GUA",
+    # "GCI",
+    # "GUY",
+    # "HAI",
+    # "HON",
+    # "HKG",
+    # "HUN",
+    # "ISL",
+    # "IND",
+    # "INA",
+    # "IRI",
+    # "IRQ",
+    # "IRL",
+    # "ISR",
+    # "ITA",
+    # "IOM",
+    # "CIV",
+    # "JAM",
+    # "JPN",
+    # "JCI",
+    # "JOR",
+    # "KAZ",
+    # "KEN",
+    # "KGZ",
+    # "KOS",
+    # "KUW",
+    # "LAO",
+    # "LAT",
+    # "LIB",
+    # "LES",
+    # "LBA",
+    # "LIE",
+    # "LTU",
+    # "LUX",
+    # "MAC",
+    # "MAD",
+    # "MAW",
+    # "MAS",
+    # "MDV",
+    # "MLI",
+    # "MLT",
+    # "MTN",
+    # "MRI",
+    # "MEX",
+    # "MDA",
+    # "MNC",
+    # "MGL",
+    # "MNE",
+    # "MAR",
+    # "MOZ",
+    # "MYA",
+    # "NAM",
+    # "NEP",
+    # "NED",
+    # "AHO",
+    # "NZL",
+    # "NCA",
+    # "NGR",
+    # "NOR",
+    # "OMA",
+    # "PAK",
+    # "PLW",
+    # "PLE",
+    # "PAN",
+    # "PNG",
+    # "PAR",
+    # "PER",
+    # "PHI",
+    # "POR",
+    # "PUR",
+    # "QAT",
+    # "ROU",
+    # "RUS",
+    # "RWA",
+    # "SMR",
+    # "STP",
+    # "KSA",
+    # "SCO",
+    # "SEN",
+    # "SRB",
+    # "SEY",
+    # "SLE",
+    # "SIN",
+    # "SGP",
+    # "SVK",
+    # "SLO",
+    # "SOL",
+    # "SOM",
+    # "SSD",
+    # "RSA",
+    # "KOR",
+    # "ESP",
+    # "SRI",
+    # "SUD",
+    # "SUR",
+    # "SWZ",
+    # "SWE",
+    # "SUI",
+    # "SYR",
+    # "TJK",
+    # "TAN",
+    # "THA",
+    # "TLS",
+    # "TOG",
+    # "TTO",
+    # "TUN",
+    # "TUR",
+    # "TKM",
+    # "UGA",
+    # "UKR",
+    # "UAE",
+    # "USA",
+    # "URU",
+    # "ISV",
+    # "UZB",
+    # "VEN",
+    # "VIE",
+    # "WLS",
+    # "YEM",
+    # "ZAM",
+    # "ZIM",
+    # "CFR",
+    # "FQE"
+
+]
+
+
+def process_tournament(tournament: str, output: TextIOWrapper):
+    browser.get(tournament)
+    time.sleep(3)
+    try:
+        links = browser.find_elements(By.TAG_NAME, "a")
+        lichess_links = [link.get_attribute("href") for link in links
+                         if link.get_attribute(
+                "href") is not None and "lichess.org/broadcast/" in link.get_attribute(
+                "href")]
+        livechess_links = [link.get_attribute("href") for link in links
+                           if
+                           link.get_attribute(
+                               "href") is not None and "view.livechesscloud.com" in link.get_attribute(
+                               "href")]
+        for lichess_link in lichess_links:
+            print("lichess: " + lichess_link)
+            lichess_download(lichess_link, browser)
+
+        for livechess_link in livechess_links:
+            print("livechess: " + livechess_link)
+            output.write(scrap_livechess(livechess_link))
+    except TypeError as e:
+        print(e)
+        traceback.print_exc()
+
+
+def process_pseudo_human(output: TextIOWrapper):
+    for country in countries:
+        try:
+            browser.get(f"https://www.chessmanager.com/pl/tournaments/finished?country={country}")
+
+            last_elem = browser.find_element(By.CSS_SELECTOR,
+                                             "body > div.pusher > div.ui.stackable.grid.container > "
+                                             "div.twelve.wide.column > div.ui.centered.pagination.menu > a:nth-child(8)")
+            try:
+                last_elem_value = int(last_elem.text)
+            except ValueError:
+                last_elem_value = 1
+
+            for i in range(last_elem_value + 1):
+                browser.get(
+                    f"https://www.chessmanager.com/pl/tournaments/finished?country={country}&city=&city_radius=0&offset={i * 50}")
+                tournaments = [link.get_attribute("href") for link in browser.find_elements(By.TAG_NAME, "a")
+                               if re.match(r"https://www\.chessmanager\.com/[\w-]*/tournaments/\d+",
+                                           link.get_attribute("href"))]
+                for tournament in tournaments:
+                    process_tournament(tournament, output)
+
+                time.sleep(6)
+
+        except Exception as e:
+            print(e)
+            traceback.print_exc()
+
+
+def process_bot(output: TextIOWrapper):
+    browser.get("https://www.chessmanager.com/en-us/tournaments/sitemap.xml")
+
+    locs = browser.find_elements(By.XPATH, "//*[local-name()='loc']")
+    urls = [
+        node.get_attribute("textContent")
+        for node in locs
     ]
 
+    for url in urls:
+        process_tournament(url, output)
+
+
+def main():
     with open("chessmanager.pgn", "a") as output:
-        for country in countries:
-            try:
-                browser.get(f"https://www.chessmanager.com/pl/tournaments/finished?country={country}")
-
-                last_elem = browser.find_element(By.CSS_SELECTOR,
-                                                 "body > div.pusher > div.ui.stackable.grid.container > "
-                                                 "div.twelve.wide.column > div.ui.centered.pagination.menu > a:nth-child(8)")
-                try:
-                    last_elem_value = int(last_elem.text)
-                except ValueError:
-                    last_elem_value = 1
-
-                for i in range(last_elem_value + 1):
-                    browser.get(
-                        f"https://www.chessmanager.com/pl/tournaments/finished?country={country}&city=&city_radius=0&offset={i * 50}")
-                    tournaments = [link.get_attribute("href") for link in browser.find_elements(By.TAG_NAME, "a")
-                                   if re.match(r"https://www\.chessmanager\.com/[\w-]*/tournaments/\d+",
-                                               link.get_attribute("href"))]
-                    for tournament in tournaments:
-                        browser.get(tournament)
-                        time.sleep(3)
-                        try:
-                            links = browser.find_elements(By.TAG_NAME, "a")
-                            lichess_links = [link.get_attribute("href") for link in links
-                                             if link.get_attribute(
-                                    "href") is not None and "lichess.org/broadcast/" in link.get_attribute(
-                                    "href")]
-                            livechess_links = [link.get_attribute("href") for link in links
-                                               if
-                                               link.get_attribute(
-                                                   "href") is not None and "view.livechesscloud.com" in link.get_attribute(
-                                                   "href")]
-                            for lichess_link in lichess_links:
-                                print("lichess: " + lichess_link)
-                                lichess_download(lichess_link, browser)
-
-                            for livechess_link in livechess_links:
-                                print("livechess: " + livechess_link)
-                                output.write(scrap_livechess(livechess_link))
-                        except TypeError as e:
-                            print(e)
-                            traceback.print_exc()
-
-                    time.sleep(6)
-
-            except Exception as e:
-                print(e)
-                traceback.print_exc()
+        process_bot(output)
 
         while check_for_crdownload_files(download_directory):
             print("Waiting for downloads to complete...")

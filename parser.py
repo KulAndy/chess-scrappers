@@ -71,12 +71,14 @@ def json2pgn(data, metadata):
     tournament = str(metadata["name"]).replace('"', "")
     site = str(metadata["location"]).replace('"', "")
     date = str(metadata["date"] or "????.??.??").replace("-", ".")
-    white = str(metadata["white"]["lname"] + ", " + metadata["white"]["fname"]).replace(
-        '"', ""
-    )
-    black = str(metadata["black"]["lname"] + ", " + metadata["black"]["fname"]).replace(
-        '"', ""
-    )
+
+    white = str(metadata["white"]["lname"])
+    if metadata["white"]["fname"]:
+        white += ", " + metadata["white"]["fname"].replace('"', "")
+
+    black = str(metadata["black"]["lname"])
+    if metadata["black"]["fname"]:
+        black += ", " + metadata["black"]["fname"].replace('"', "")
     moves = ""
     for i in range(len(data["moves"])):
         if i % 2 == 0:
