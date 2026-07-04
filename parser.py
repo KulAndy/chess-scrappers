@@ -72,13 +72,20 @@ def json2pgn(data, metadata):
     site = str(metadata["location"]).replace('"', "")
     date = str(metadata["date"] or "????.??.??").replace("-", ".")
 
-    white = str(metadata["white"]["lname"])
+    white = []
+    if metadata["white"]["lname"]:
+        white.append(metadata["white"]["lname"].replace('"', ""))
     if metadata["white"]["fname"]:
-        white += ", " + metadata["white"]["fname"].replace('"', "")
+        white.append(metadata["white"]["fname"].replace('"', ""))
+    white = ",".join(white)
 
-    black = str(metadata["black"]["lname"])
+    black = []
+    if metadata["black"]["lname"]:
+        black.append(metadata["black"]["lname"].replace('"', ""))
     if metadata["black"]["fname"]:
-        black += ", " + metadata["black"]["fname"].replace('"', "")
+        black.append(metadata["black"]["fname"].replace('"', ""))
+    black = ",".join(black)
+
     moves = ""
     for i in range(len(data["moves"])):
         if i % 2 == 0:

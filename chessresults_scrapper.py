@@ -174,10 +174,14 @@ def scrap_players(browser):
 def get_list_of_empty_date_files():
     needle1 = 'Date ""'
     needle2 = 'Date "????.??.??"'
+    pgn_pattern = re.compile(r"^[1-9]\d*\.pgn$")
 
     files = []
 
-    for path in Path(DOWNLOAD_DIR).rglob("*"):
+    for path in Path(DOWNLOAD_DIR).rglob("*.pgn"):
+        if not pgn_pattern.match(path.name):
+            continue
+
         if path.is_file():
             try:
                 with path.open("r", errors="ignore") as f:
@@ -196,9 +200,13 @@ def get_list_of_empty_date_files():
 
 def add_missing_date_tag():
     date_re = re.compile(r"^\d{4}\.\d{2}\.\d{2}$")
+    pgn_pattern = re.compile(r"^[1-9]\d*\.pgn$")
 
     with open(os.devnull, "w") as fnull, redirect_stderr(fnull):
         for path in Path(DOWNLOAD_DIR).glob("*.pgn"):
+            if not pgn_pattern.match(path.name):
+                continue
+
             if not path.is_file():
                 continue
 
@@ -286,7 +294,7 @@ def correct_date_from_cr(browser, file):
                 content = content.replace('Date "????.??.??"', new_date)
                 file.write_text(content)
 
-    except TimeoutException:
+    except TimeoutException | ValueError:
         pass
 
 
