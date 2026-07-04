@@ -77,14 +77,14 @@ def json2pgn(data, metadata):
         white.append(metadata["white"]["lname"].replace('"', ""))
     if metadata["white"]["fname"]:
         white.append(metadata["white"]["fname"].replace('"', ""))
-    white = ",".join(white)
+    white = ", ".join(white)
 
     black = []
     if metadata["black"]["lname"]:
         black.append(metadata["black"]["lname"].replace('"', ""))
     if metadata["black"]["fname"]:
         black.append(metadata["black"]["fname"].replace('"', ""))
-    black = ",".join(black)
+    black = ", ".join(black)
 
     moves = ""
     for i in range(len(data["moves"])):
