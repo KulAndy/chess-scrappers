@@ -8,6 +8,9 @@ download_semaphore = Semaphore(2)
 
 
 def lichess_download(link):
+    res = requests.get(link)
+    if res.ok:
+        link = res.url
     with download_semaphore:
         ids = set()
         match = re.search(r"https://lichess\.org/broadcast/([^/?#]+)$", link)
