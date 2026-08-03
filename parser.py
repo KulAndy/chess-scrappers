@@ -1,43 +1,47 @@
+import re
 from threading import Semaphore
 from urllib.parse import urlparse
 import requests
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.wait import WebDriverWait
 from unidecode import unidecode
 
 download_semaphore = Semaphore(2)
 
 
-def lichess_download(link, browser):
+def lichess_download(link):
     with download_semaphore:
-        try:
-            browser.get(link + "#games")
-            wait = WebDriverWait(browser, 1)
-            games = wait.until(
-                EC.presence_of_all_elements_located((By.CLASS_NAME, "mini-game"))
-            )
-            if games:
-                games[0].click()
-                share = wait.until(EC.element_to_be_clickable((By.CLASS_NAME, "share")))
-                share.click()
-                download_all_rounds = wait.until(
-                    EC.element_to_be_clickable(
-                        (By.PARTIAL_LINK_TEXT, "POBIERZ WSZYSTKIE RUNDY")
-                    )
-                )
-                download_all_rounds.click()
-        except:
-            try:
-                wait = WebDriverWait(browser, 1)
-                download_all_rounds = wait.until(
-                    EC.element_to_be_clickable(
-                        (By.PARTIAL_LINK_TEXT, "DOWNLOAD ALL ROUNDS")
-                    )
-                )
-                download_all_rounds.click()
-            except:
-                print(f"Error processing link: {link}")
+        ids = set()
+        match = re.search(r"https://lichess\.org/broadcast/([^/?#]+)$", link)
+        lichess_url = None
+        if match:
+            lichess_url = "https://lichess.org/api/broadcast/" + match.group(1)
+
+        match = re.search(r"https://lichess\.org/broadcast/([^/?#]+/[^/?#]+/[^/?#]+)$", link)
+        if match:
+            lichess_url = "https://lichess.org/api/broadcast/" + match.group(1)
+
+        pgn = ""
+        if lichess_url:
+            response = requests.get(lichess_url)
+            response.raise_for_status()
+            if response.ok:
+                data = response.json()
+                response = requests.get(lichess_url)
+                response.raise_for_status()
+
+                data = response.json()
+
+                for tour in data.get("group", {}).get("tours", []):
+                    ids.add(tour["id"])
+
+                if data.get("tour"):
+                    ids.add(data["tour"]["id"])
+
+                for tour_id in ids:
+                    res = requests.get(f"https://lichess.org/api/broadcast/{tour_id}.pgn")
+                    if res.ok:
+                        pgn += res.text + "\n\n"
+
+        return unidecode(pgn)
 
 
 def scrap_livechess(url):

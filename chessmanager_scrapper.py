@@ -234,7 +234,7 @@ def process_tournament(tournament: str, output: TextIOWrapper):
                                "href")]
         for lichess_link in lichess_links:
             print("lichess: " + lichess_link)
-            lichess_download(lichess_link, browser)
+            output.write(lichess_download(lichess_link))
 
         for livechess_link in livechess_links:
             print("livechess: " + livechess_link)

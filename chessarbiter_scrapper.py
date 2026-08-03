@@ -1,6 +1,7 @@
 # do analizy stron
 import os
 import sys
+import traceback
 from datetime import datetime
 # kolejki są fifo
 from queue import Queue, Empty
@@ -94,7 +95,7 @@ def searchPGN(tournament, browser, year):
     found_links = []
     href = tournament["href"]
     JS_PATTERN = r"</?\w+|function|if|var|let|;|\(.*\)"
-    EMPTY_YEAR_PATTERN = r"(1899|\?\?\?\?)[.-]\.[.-]\."
+    EMPTY_YEAR_PATTERN = r"(1899|\?\?\?\?)[.-].{1,2}[.-].{1,2}"
     if "https://chessarbiter.com/turnieje/open.php?" in href:
         try:
             browser.get(href)
@@ -102,6 +103,9 @@ def searchPGN(tournament, browser, year):
             for link in links:
                 try:
                     linkUrl = link.get_attribute("href")
+                    if not linkUrl:
+                        continue
+
                     # dodawanie plików pgn
                     if ".pgn" in linkUrl:
                         try:
@@ -183,15 +187,16 @@ def searchPGN(tournament, browser, year):
                                 pass
                             pass
                     elif "lichess.org/broadcast/" in linkUrl:
-                        lichess_download(linkUrl, browser)
+                        found_links.append(lichess_download(linkUrl))
 
                     elif "view.livechesscloud.com" in linkUrl:
-                        try:
-                            found_links.append(scrap_livechess(linkUrl))
-                        except:
-                            pass
-                except:
-                    pass
+                        found_links.append(scrap_livechess(linkUrl))
+                except Exception as e:
+                    print(f"Error processing: {href}")
+                    if linkUrl:
+                        print(f"Error processing: {linkUrl}")
+                    print(e)
+                    print(traceback.format_exc())
         except:
             pass
     return found_links
