@@ -11,6 +11,7 @@ import chess.pgn
 import requests
 from selenium import webdriver
 from selenium.webdriver import Keys
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.select import Select
 from selenium.webdriver.support.wait import WebDriverWait
@@ -18,6 +19,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
 
 DOWNLOAD_DIR = Path.home() / "Dokumenty" / "chess-results_pgns"
+DOWNLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
 
 def accept_cookies(browser):
@@ -299,7 +301,17 @@ def correct_date_from_cr(browser, file):
 
 
 def main():
-    browser = webdriver.Chrome()
+    options = Options()
+    options.add_experimental_option(
+        "prefs",
+        {
+            "download.default_directory": str(DOWNLOAD_DIR),
+            "download.prompt_for_download": False,
+            "download.directory_upgrade": True,
+            "safebrowsing.enabled": True,
+        },
+    )
+    browser = webdriver.Chrome(options=options)
     #
     # scrap_players(browser)
     # scrap_latest_tournaments(browser)
