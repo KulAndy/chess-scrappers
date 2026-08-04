@@ -88,18 +88,24 @@ def json2pgn(data, metadata):
         date = str(metadata["date"] or "????.??.??").replace("-", ".")
 
     white = []
-    if metadata["white"]["lname"]:
-        white.append(metadata["white"]["lname"].replace('"', ""))
-    if metadata["white"]["fname"]:
-        white.append(metadata["white"]["fname"].replace('"', ""))
-    white = ", ".join(white)
+    if metadata["white"]:
+        if metadata["white"]["lname"]:
+            white.append(metadata["white"]["lname"].replace('"', ""))
+        if metadata["white"]["fname"]:
+            white.append(metadata["white"]["fname"].replace('"', ""))
+        white = ", ".join(white)
+    else:
+        white = "N, N"
 
     black = []
-    if metadata["black"]["lname"]:
-        black.append(metadata["black"]["lname"].replace('"', ""))
-    if metadata["black"]["fname"]:
-        black.append(metadata["black"]["fname"].replace('"', ""))
-    black = ", ".join(black)
+    if metadata["black"]:
+        if metadata["black"]["lname"]:
+            black.append(metadata["black"]["lname"].replace('"', ""))
+        if metadata["black"]["fname"]:
+            black.append(metadata["black"]["fname"].replace('"', ""))
+        black = ", ".join(black)
+    else:
+        black = "N, N"
 
     moves = ""
     for i in range(len(data["moves"])):
