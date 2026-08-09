@@ -1,3 +1,4 @@
+import argparse
 import re
 import time
 import requests
@@ -15,7 +16,7 @@ def get_hidden_fields(soup):
             hidden_fields[field] = element.get("value", "")
     return hidden_fields
 
-def main():
+def main(compare_downloaded = False):
     session = requests.Session()
 
     session.headers.update({
@@ -58,7 +59,7 @@ def main():
     transmission_ids = set()
     for href, tournament_id in matches:
         downloaded = DOWNLOAD_DIR / f"{tournament_id}.pgn"
-        if not downloaded.exists():
+        if not compare_downloaded or not downloaded.exists():
             transmission_ids.add(tournament_id)
 
     with open("chessresults.pgn", "w") as file:
@@ -96,11 +97,22 @@ def main():
                 file.write(response.text)
                 file.write("\n\n")
 
-                with open(DOWNLOAD_DIR / f"{tournament_id}.pgn", "w") as games:
-                    games.write(response.text)
+                if compare_downloaded:
+                    with open(DOWNLOAD_DIR / f"{tournament_id}.pgn", "w") as games:
+                        games.write(response.text)
             else:
                 print(f"HTTP {response.status_code} for {tournament_id}")
             time.sleep(2)
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument(
+        "--compare-downloaded",
+        action="store_true",
+        help="Check that file exists in downloaded"
+    )
+
+    args = parser.parse_args()
+
+    main(args.compare_downloaded)
