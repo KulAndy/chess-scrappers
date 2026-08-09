@@ -3,7 +3,7 @@ import re
 import time
 import requests
 from bs4 import BeautifulSoup
-from chessresults_scrapper import DOWNLOAD_DIR
+from . import chessresults_scrapper
 
 CR_URL = "https://chess-results.com/"
 PARTIE_SUCHE_URL = "https://s2.chess-results.com/PartieSuche.aspx"
@@ -58,7 +58,7 @@ def main(compare_downloaded = False):
     )
     transmission_ids = set()
     for href, tournament_id in matches:
-        downloaded = DOWNLOAD_DIR / f"{tournament_id}.pgn"
+        downloaded = chessresults_scrapper.DOWNLOAD_DIR / f"{tournament_id}.pgn"
         if not compare_downloaded or not downloaded.exists():
             transmission_ids.add(tournament_id)
 
@@ -98,7 +98,7 @@ def main(compare_downloaded = False):
                 file.write("\n\n")
 
                 if compare_downloaded:
-                    with open(DOWNLOAD_DIR / f"{tournament_id}.pgn", "w") as games:
+                    with open(chessresults_scrapper.DOWNLOAD_DIR / f"{tournament_id}.pgn", "w") as games:
                         games.write(response.text)
             else:
                 print(f"HTTP {response.status_code} for {tournament_id}")
