@@ -25,12 +25,7 @@ def lichess_download(link):
         pgn = ""
         if lichess_url:
             response = requests.get(lichess_url)
-            response.raise_for_status()
             if response.ok:
-                data = response.json()
-                response = requests.get(lichess_url)
-                response.raise_for_status()
-
                 data = response.json()
 
                 for tour in data.get("group", {}).get("tours", []):
@@ -43,6 +38,22 @@ def lichess_download(link):
                     res = requests.get(f"https://lichess.org/api/broadcast/{tour_id}.pgn")
                     if res.ok:
                         pgn += res.text + "\n\n"
+
+        else:
+            match = re.search(r"https://lichess\.org/broadcast/([^/?#]+/[^/?#]+)$", link)
+
+            if match:
+                group_url = (
+                    "https://lichess.org/api/stream/broadcast/group/"
+                    + match.group(1).split("/")[-1]
+                    + ".pgn"
+                )
+
+                response = requests.get(group_url)
+                response.raise_for_status()
+
+                if response.ok:
+                    pgn += response.text + "\n\n"
 
         return unidecode(pgn)
 
