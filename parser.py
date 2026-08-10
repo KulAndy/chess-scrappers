@@ -11,6 +11,8 @@ def lichess_download(link):
     res = requests.get(link)
     if res.ok:
         link = res.url
+
+    pgn = ""
     with download_semaphore:
         ids = set()
         match = re.search(r"https://lichess\.org/broadcast/([^/?#]+)$", link)
@@ -22,7 +24,6 @@ def lichess_download(link):
         if match:
             lichess_url = "https://lichess.org/api/broadcast/" + match.group(1)
 
-        pgn = ""
         if lichess_url:
             response = requests.get(lichess_url)
             if response.ok:
@@ -40,20 +41,25 @@ def lichess_download(link):
                         pgn += res.text + "\n\n"
 
         else:
-            match = re.search(r"https://lichess\.org/broadcast/([^/?#]+/[^/?#]+)$", link)
+            match = re.search(r"https://lichess\.org/broadcast/.*/([^/?#]+)$", link)
 
             if match:
-                group_url = (
-                    "https://lichess.org/api/stream/broadcast/group/"
-                    + match.group(1).split("/")[-1]
-                    + ".pgn"
-                )
+                for part in ["group", "tour", "round"]:
+                    try:
+                        url = ("https://lichess.org/api/stream/broadcast/"
+                               + part
+                               + "/"
+                               + match.group(1)
+                               + ".pgn"
+                               )
+                        response = requests.get(url)
+                        response.raise_for_status()
 
-                response = requests.get(group_url)
-                response.raise_for_status()
-
-                if response.ok:
-                    pgn += response.text + "\n\n"
+                        if response.ok:
+                            pgn += response.text + "\n\n"
+                            break
+                    except:
+                        pass
 
         return unidecode(pgn)
 
