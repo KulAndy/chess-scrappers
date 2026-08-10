@@ -8,13 +8,12 @@ download_semaphore = Semaphore(2)
 
 
 def lichess_download(link):
-    res = requests.get(link)
+    res = requests.get(link, timeout=10)
     if res.ok:
         link = res.url
 
     pgn = ""
     with download_semaphore:
-        ids = set()
         match = re.search(r"https://lichess\.org/broadcast/([^/?#]+)$", link)
         lichess_url = None
         if match:
@@ -25,21 +24,18 @@ def lichess_download(link):
             lichess_url = "https://lichess.org/api/broadcast/" + match.group(1)
 
         if lichess_url:
-            response = requests.get(lichess_url)
+            response = requests.get(lichess_url, timeout=10)
             if response.ok:
                 data = response.json()
-
-                for tour in data.get("group", {}).get("tours", []):
-                    ids.add(tour["id"])
-
-                if data.get("tour"):
-                    ids.add(data["tour"]["id"])
-
-                for tour_id in ids:
-                    res = requests.get(f"https://lichess.org/api/broadcast/{tour_id}.pgn")
+                group_id = data.get("group", {}).get("id", None)
+                if group_id:
+                    res = requests.get(f"https://lichess.org/api/stream/broadcast/group/{group_id}.pgn", timeout=10)
                     if res.ok:
                         pgn += res.text + "\n\n"
-
+                else:
+                    res = requests.get(f"{lichess_url}.pgn", timeout=10)
+                    if res.ok:
+                        pgn += res.text + "\n\n"
         else:
             match = re.search(r"https://lichess\.org/broadcast/.*/([^/?#]+)$", link)
 
@@ -52,7 +48,7 @@ def lichess_download(link):
                                + match.group(1)
                                + ".pgn"
                                )
-                        response = requests.get(url)
+                        response = requests.get(url, timeout=10)
                         response.raise_for_status()
 
                         if response.ok:
@@ -69,18 +65,21 @@ def scrap_livechess(url):
     parsed_url = urlparse(url)
     tournament_id = parsed_url.fragment
     tournament_response = requests.get(
-        f"https://1.pool.livechesscloud.com/get/{tournament_id}/tournament.json"
+        f"https://1.pool.livechesscloud.com/get/{tournament_id}/tournament.json",
+        timeout=10
     )
     tournament_json = tournament_response.json()
     rounds = tournament_json["rounds"]
     for i in range(len(rounds)):
         round_response = requests.get(
-            f"https://1.pool.livechesscloud.com/get/{tournament_id}/round-{i + 1}/index.json"
+            f"https://1.pool.livechesscloud.com/get/{tournament_id}/round-{i + 1}/index.json",
+            timeout=10
         )
         round_json = round_response.json()
         for j in range(len(round_json["pairings"])):
             response = requests.get(
-                f"https://1.pool.livechesscloud.com/get/{tournament_id}/round-{i + 1}/game-{j + 1}.json?poll"
+                f"https://1.pool.livechesscloud.com/get/{tournament_id}/round-{i + 1}/game-{j + 1}.json?poll",
+                timeout=10
             )
             if response.ok:
                 metadata = round_json["pairings"][j]
