@@ -5,15 +5,17 @@ import requests
 from unidecode import unidecode
 
 download_semaphore = Semaphore(2)
+TIMEOUT = 10
 
 
 def lichess_download(link):
-    res = requests.get(link, timeout=10)
+    res = requests.get(link, timeout=TIMEOUT)
     if res.ok:
         link = res.url
 
     pgn = ""
     with download_semaphore:
+        ids = set()
         match = re.search(r"https://lichess\.org/broadcast/([^/?#]+)$", link)
         lichess_url = None
         if match:
@@ -24,38 +26,23 @@ def lichess_download(link):
             lichess_url = "https://lichess.org/api/broadcast/" + match.group(1)
 
         if lichess_url:
-            response = requests.get(lichess_url, timeout=10)
+            response = requests.get(lichess_url, timeout=TIMEOUT)
             if response.ok:
                 data = response.json()
-                group_id = data.get("group", {}).get("id", None)
-                if group_id:
-                    res = requests.get(f"https://lichess.org/api/stream/broadcast/group/{group_id}.pgn", timeout=10)
+
+                for tour in data.get("group", {}).get("tours", []):
+                    ids.add(tour["id"])
+
+                if data.get("tour"):
+                    ids.add(data["tour"]["id"])
+
+                for tour_id in ids:
+                    res = requests.get(f"https://lichess.org/api/broadcast/{tour_id}.pgn", timeout=TIMEOUT)
                     if res.ok:
                         pgn += res.text + "\n\n"
-                else:
-                    res = requests.get(f"{lichess_url}.pgn", timeout=10)
-                    if res.ok:
-                        pgn += res.text + "\n\n"
+
         else:
-            match = re.search(r"https://lichess\.org/broadcast/.*/([^/?#]+)$", link)
-
-            if match:
-                for part in ["group", "tour", "round"]:
-                    try:
-                        url = ("https://lichess.org/api/stream/broadcast/"
-                               + part
-                               + "/"
-                               + match.group(1)
-                               + ".pgn"
-                               )
-                        response = requests.get(url, timeout=10)
-                        response.raise_for_status()
-
-                        if response.ok:
-                            pgn += response.text + "\n\n"
-                            break
-                    except:
-                        pass
+            raise ValueError(f"Incorrect lichess URL: {link}")
 
         return unidecode(pgn)
 
@@ -66,20 +53,20 @@ def scrap_livechess(url):
     tournament_id = parsed_url.fragment
     tournament_response = requests.get(
         f"https://1.pool.livechesscloud.com/get/{tournament_id}/tournament.json",
-        timeout=10
+        timeout=TIMEOUT
     )
     tournament_json = tournament_response.json()
     rounds = tournament_json["rounds"]
     for i in range(len(rounds)):
         round_response = requests.get(
             f"https://1.pool.livechesscloud.com/get/{tournament_id}/round-{i + 1}/index.json",
-            timeout=10
+            timeout=TIMEOUT
         )
         round_json = round_response.json()
         for j in range(len(round_json["pairings"])):
             response = requests.get(
                 f"https://1.pool.livechesscloud.com/get/{tournament_id}/round-{i + 1}/game-{j + 1}.json?poll",
-                timeout=10
+                timeout=TIMEOUT
             )
             if response.ok:
                 metadata = round_json["pairings"][j]
