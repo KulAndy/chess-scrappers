@@ -10,7 +10,8 @@ DOWNLOAD_DIR = Path.home() / "Dokumenty" / "chess-results_pgns"
 CR_URL = "https://chess-results.com/"
 PARTIE_SUCHE_URL = "https://s2.chess-results.com/PartieSuche.aspx"
 
-def get_hidden_fields(soup):
+
+def get_hidden_fields(soup: BeautifulSoup) -> dict[str, str]:
     hidden_fields = {}
     for field in ["__VIEWSTATE", "__VIEWSTATEGENERATOR", "__EVENTVALIDATION"]:
         element = soup.find("input", {"name": field})
@@ -18,7 +19,8 @@ def get_hidden_fields(soup):
             hidden_fields[field] = element.get("value", "")
     return hidden_fields
 
-def main(compare_downloaded = False):
+
+def main(compare_downloaded: bool = False) -> None:
     session = requests.Session()
 
     session.headers.update({
@@ -105,6 +107,7 @@ def main(compare_downloaded = False):
             else:
                 print(f"HTTP {response.status_code} for {tournament_id}")
             time.sleep(2)
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

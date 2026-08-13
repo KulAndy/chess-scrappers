@@ -18,17 +18,17 @@ COOLDOWN_EVERY = 20  # pause after every N tournaments
 COOLDOWN_SECONDS = 60  # cooldown duration
 
 
-def wait_for_page_load(browser, timeout=30):
+def wait_for_page_load(browser: webdriver.Chrome, timeout: int = 30) -> None:
     WebDriverWait(browser, timeout).until(
         lambda d: d.execute_script("return document.readyState") == "complete"
     )
 
 
-def human_delay(min_s, max_s):
+def human_delay(min_s: float, max_s: float) -> None:
     time.sleep(random.uniform(min_s, max_s))
 
 
-def scrap_tournament(url, browser):
+def scrap_tournament(url: str, browser: webdriver.Chrome) -> None:
     wait = WebDriverWait(browser, 20)
 
     browser.get(url)
@@ -60,7 +60,7 @@ def scrap_tournament(url, browser):
     download_pgn.click()
 
 
-def collect_archived_tournaments(browser, timeout_minutes=30):
+def collect_archived_tournaments(browser: webdriver.Chrome, timeout_minutes: int = 30) -> list[str]:
     browser.get("https://media.idchess.com/en/tournaments/archived")
     wait_for_page_load(browser)
 
@@ -106,7 +106,7 @@ def collect_archived_tournaments(browser, timeout_minutes=30):
             print(f"Collected {len(collected_links)}")
 
         elapsed = time.time() - start_time
-        print(f"Elapsed {elapsed//60}:{elapsed % 60}")
+        print(f"Elapsed {elapsed // 60}:{elapsed % 60}")
 
         if no_growth_cycles >= MAX_NO_GROWTH:
             print("End of archived tournaments")

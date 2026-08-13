@@ -1,21 +1,21 @@
 # do analizy stron
 import os
+import re
 import sys
+import time
 import traceback
 from datetime import datetime
 # kolejki są fifo
 from queue import Queue, Empty
 # współbierzność
-from threading import Thread, Lock
+from threading import Thread
 from urllib.parse import unquote
 
 import bs4
 import numpy as np
 # sprawdza poprawność danych
 import pyinputplus as pyip
-import re
 import requests
-import time
 # kontrola przeglądarki
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options as ChromeOptions
@@ -27,7 +27,12 @@ from Throttle import Throttle
 from parser import lichess_download, scrap_livechess
 
 
-def manual_download(url, browser, found_links, year):
+def manual_download(
+    url: str,
+    browser: webdriver.Chrome | webdriver.Firefox | webdriver.Edge | webdriver.Safari,
+    found_links: list[str],
+    year: int,
+) -> None:
     try:
         browser.get(url)
         # wyświetlanie 100 gier
@@ -90,7 +95,11 @@ def manual_download(url, browser, found_links, year):
         pass
 
 
-def searchPGN(tournament, browser, year):
+def searchPGN(
+    tournament: bs4.element.Tag,
+    browser: webdriver.Chrome | webdriver.Firefox | webdriver.Edge | webdriver.Safari,
+    year: int,
+) -> list[str]:
     """szukanie pgnów"""
     found_links = []
     href = tournament["href"]
@@ -108,9 +117,9 @@ def searchPGN(tournament, browser, year):
 
                     # dodawanie plików pgn
                     if ".pgn" in linkUrl:
+                        remoteFile = requests.get(linkUrl, timeout=10)
                         try:
                             # pobieranie strony
-                            remoteFile = requests.get(linkUrl, timeout=10)
                             remoteFile.raise_for_status()
                             # jeśli nie xml/javascript
                             if not re.search(JS_PATTERN, remoteFile.text):
@@ -138,7 +147,7 @@ def searchPGN(tournament, browser, year):
                                     remoteFile.text,
                                 )
                             )
-                        except Exception as err:
+                        except Exception:
                             overChessarbiterUrl = re.compile(
                                 r"chessarbiter\.com/turnieje/2[0-9]{3}/t[id]_[0-9]+/(?=.*\.[a-z]{2,3})"
                             )
@@ -202,7 +211,13 @@ def searchPGN(tournament, browser, year):
     return found_links
 
 
-def worker(work_queue, results_queue, throttle, chooseBrowser, year):
+def worker(
+    work_queue: Queue,
+    results_queue: Queue,
+    throttle: Throttle,
+    chooseBrowser: str,
+    year: int,
+) -> None:
     # switch-case w pythonie
     try:
         browser = None
@@ -253,7 +268,7 @@ def worker(work_queue, results_queue, throttle, chooseBrowser, year):
         print(e)
 
 
-def main():
+def main() -> None:
     # ilość procesów scrapujących
     POOL_SIZE = 2
     # lista przglądarek
@@ -292,7 +307,6 @@ def main():
     try:
         if sys.platform == "win32":
             options = EdgeOptions()
-            options.use_chromium = True
             options.add_argument("headless")
             options.add_argument("disable-gpu")
             browser = webdriver.Edge()
@@ -433,7 +447,8 @@ def main():
                 # zawierające notacje algebraiczną
                 result = filter(
                     lambda x: re.search(
-                        r"(([1-9][0-9]*\.)? ?(([RBNQK]?[a-h1-8]?x?[a-h][1-8][+#]?|0-0-0|O-O-O|0-0|O-O) ?({.*})? ?){,2})+|(0-1|1-0|1\/2-1\/2|0,5-0,5|0.5-0.5|\*)|^\*$",
+                        r"(([1-9][0-9]*\.)? ?(([RBNQK]?[a-h1-8]?x?[a-h][1-8][+#]?|0-0-0|O-O-O|0-0|O-O) ?({.*})? ?){,"
+                        r"2})+|(0-1|1-0|1/2-1/2|0,5-0,5|0.5-0.5|\*)|^\*$",
                         x,
                     ),
                     result,

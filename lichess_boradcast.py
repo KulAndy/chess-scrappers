@@ -17,14 +17,14 @@ os.makedirs(DOWNLOAD_DIR, exist_ok=True)
 os.makedirs(PGN_DIR, exist_ok=True)
 
 
-def download_list():
+def download_list() -> list[str]:
     url = "https://database.lichess.org/broadcast/list.txt"
     response = requests.get(url)
     response.raise_for_status()
     return response.text.strip().splitlines()
 
 
-def download_file(url):
+def download_file(url: str) -> None:
     filename = os.path.basename(urlparse(url).path)
     dest_path = os.path.join(DOWNLOAD_DIR, filename)
 
@@ -43,7 +43,7 @@ def download_file(url):
         print(f"[ERROR] Failed to download {url}: {e}")
 
 
-def decompress_and_fix(filename):
+def decompress_and_fix(filename: str) -> None:
     if not filename.endswith(".pgn.zst"):
         return
 
@@ -108,7 +108,7 @@ def decompress_and_fix(filename):
             os.remove(tmp_path)
 
 
-def main():
+def main() -> None:
     urls = download_list()
     for url in urls:
         download_file(url.strip())

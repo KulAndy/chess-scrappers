@@ -1,5 +1,6 @@
 import re
 from threading import Semaphore
+from typing import Any
 from urllib.parse import urlparse
 import requests
 from unidecode import unidecode
@@ -8,7 +9,7 @@ download_semaphore = Semaphore(2)
 TIMEOUT = 10
 
 
-def lichess_download(link):
+def lichess_download(link: str):
     res = requests.get(link, timeout=TIMEOUT)
     if res.ok:
         link = res.url
@@ -47,7 +48,7 @@ def lichess_download(link):
         return unidecode(pgn)
 
 
-def scrap_livechess(url):
+def scrap_livechess(url: str):
     pgn = ""
     parsed_url = urlparse(url)
     tournament_id = parsed_url.fragment
@@ -77,7 +78,7 @@ def scrap_livechess(url):
     return unidecode(pgn)
 
 
-def json2pgn(data, metadata):
+def json2pgn(data: dict[str, Any ], metadata: dict[str, Any]) -> str:
     tournament = "?"
     if metadata["name"]:
         tournament = str(metadata["name"]).replace('"', "")

@@ -22,7 +22,7 @@ DOWNLOAD_DIR = Path.home() / "Dokumenty" / "chess-results_pgns"
 DOWNLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
 
-def accept_cookies(browser):
+def accept_cookies(browser: webdriver.Chrome) -> None:
     try:
         btn_allow = WebDriverWait(browser, 5).until(
             EC.element_to_be_clickable((By.ID, 'CybotCookiebotDialogBodyLevelButtonLevelOptinAllowAll'))
@@ -33,7 +33,7 @@ def accept_cookies(browser):
         pass
 
 
-def download_pgn(browser, data):
+def download_pgn(browser: webdriver.Chrome, data: str) -> None:
     try:
         btn_download = WebDriverWait(browser, 10).until(
             EC.element_to_be_clickable((By.ID, 'P1_linkbutton_DownLoadPGN'))
@@ -45,7 +45,7 @@ def download_pgn(browser, data):
         print(f"Error processing: {data}")
 
 
-def process_tournament_links(browser):
+def process_tournament_links(browser: webdriver.Chrome) -> None:
     WebDriverWait(browser, 10).until(EC.presence_of_element_located((By.TAG_NAME, 'body')))
     time.sleep(3)
 
@@ -72,7 +72,7 @@ def process_tournament_links(browser):
         time.sleep(3)
 
 
-def scrap_latest_tournaments(browser):
+def scrap_latest_tournaments(browser: webdriver.Chrome) -> None:
     browser.get("https://chess-results.com/Default.aspx?lan=3")
 
     accept_cookies(browser)
@@ -82,7 +82,11 @@ def scrap_latest_tournaments(browser):
     process_tournament_links(browser)
 
 
-def scrap_tournament_rage(browser, start_date, end_date):
+def scrap_tournament_rage(
+    browser: webdriver.Chrome,
+    start_date: date,
+    end_date: date,
+) -> None:
     browser.get("https://s2.chess-results.com/turniersuche.aspx?lan=3")
     print(start_date.strftime("%Y-%m-%d"), end_date.strftime("%Y-%m-%d"))
 
@@ -128,14 +132,14 @@ def scrap_tournament_rage(browser, start_date, end_date):
     process_tournament_links(browser)
 
 
-def download_fide_list():
+def download_fide_list() -> None:
     response = requests.get("https://ratings.fide.com/download/standard_rating_list.zip")
     response.raise_for_status()
     with zipfile.ZipFile(io.BytesIO(response.content)) as z:
         z.extractall()
 
 
-def scrap_players(browser):
+def scrap_players(browser: webdriver.Chrome) -> None:
     download_fide_list()
     wait10 = WebDriverWait(browser, 10)
     wait3 = WebDriverWait(browser, 3)
@@ -173,7 +177,7 @@ def scrap_players(browser):
                 continue
 
 
-def get_list_of_empty_date_files():
+def get_list_of_empty_date_files() -> list[Path]:
     needle1 = 'Date ""'
     needle2 = 'Date "????.??.??"'
     pgn_pattern = re.compile(r"^[1-9]\d*\.pgn$")
@@ -200,7 +204,7 @@ def get_list_of_empty_date_files():
     return files
 
 
-def add_missing_date_tag():
+def add_missing_date_tag() -> None:
     date_re = re.compile(r"^\d{4}\.\d{2}\.\d{2}$")
     pgn_pattern = re.compile(r"^[1-9]\d*\.pgn$")
 
@@ -250,7 +254,10 @@ def add_missing_date_tag():
                     pass
 
 
-def correct_date_from_cr(browser, file):
+def correct_date_from_cr(
+    browser: webdriver.Chrome,
+    file: Path,
+) -> None:
     print(file)
     tournamentId = file.stem
     browser.get("https://s2.chess-results.com/turniersuche.aspx?lan=3")
@@ -300,7 +307,7 @@ def correct_date_from_cr(browser, file):
         pass
 
 
-def main():
+def main() -> None:
     options = Options()
     options.add_experimental_option(
         "prefs",
