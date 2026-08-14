@@ -12,7 +12,6 @@ from threading import Thread
 from urllib.parse import unquote
 
 import bs4
-import numpy as np
 # sprawdza poprawność danych
 import pyinputplus as pyip
 import requests
@@ -251,7 +250,7 @@ def worker(
                     results_queue.put(err)
                 else:
                     if (
-                            isinstance(result, (list, tuple, np.ndarray))
+                            isinstance(result, (list, tuple))
                             and len(result) > 0
                     ):
                         results_queue.put(result)
