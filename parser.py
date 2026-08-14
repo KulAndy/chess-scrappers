@@ -22,7 +22,7 @@ def lichess_download(link: str):
         if match:
             lichess_url = "https://lichess.org/api/broadcast/" + match.group(1)
 
-        match = re.search(r"https://lichess\.org/broadcast/([^/?#]+/[^/?#]+/[^/?#]+)$", link)
+        match = re.search(r"https://lichess\.org/broadcast/([^/?#]+/[^/?#]+/[^/?#]+)(/[^/?#]+)?$", link)
         if match:
             lichess_url = "https://lichess.org/api/broadcast/" + match.group(1)
 
