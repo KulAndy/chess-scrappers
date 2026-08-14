@@ -22,7 +22,7 @@ options.add_argument("--start-maximized")
 options.add_argument("--disable-blink-features=AutomationControlled")
 options.add_argument("--disable-javascript")
 browser = uc.Chrome(
-    version_main=149,
+    version_main=151,
     options=options
 )
 
@@ -234,11 +234,18 @@ def process_tournament(tournament: str, output: TextIOWrapper):
                                "href")]
         for lichess_link in lichess_links:
             print("lichess: " + lichess_link)
-            output.write(lichess_download(lichess_link))
+            try:
+                output.write(lichess_download(lichess_link))
+            except:
+                print("Error downloading: " + lichess_link)
 
         for livechess_link in livechess_links:
             print("livechess: " + livechess_link)
-            output.write(scrap_livechess(livechess_link))
+            try:
+                output.write(scrap_livechess(livechess_link))
+            except:
+                print("Error downloading: " + livechess_link)
+
     except TypeError as e:
         print(e)
         traceback.print_exc()
