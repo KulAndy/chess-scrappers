@@ -26,6 +26,9 @@ from selenium.webdriver.firefox.options import Options as FirefoxOptions
 from Throttle import Throttle
 from parser import lichess_download, scrap_livechess
 
+FILENAME = "chessarbiter.pgn"
+BROWSER_DETECTED = " ok"
+BROWSER_NOT_DETECTED = " brak"
 
 def manual_download(
     url: str,
@@ -283,9 +286,9 @@ def main() -> None:
         browser = webdriver.Chrome(options=options)
         browsers.append("Chrome")
         browser.quit()
-        print(" ok")
+        print(BROWSER_DETECTED)
     except Exception:
-        print(" brak")
+        print(BROWSER_NOT_DETECTED)
 
     print("Firefox", end="")
     try:
@@ -294,36 +297,34 @@ def main() -> None:
         browser = webdriver.Firefox(options=options)
         browsers.append("Firefox")
         browser.quit()
-        print(" ok")
+        print(BROWSER_DETECTED)
     except Exception:
-        print(" brak")
+        print(BROWSER_NOT_DETECTED)
 
     # dla windowsa
     if sys.platform == "win32":
         print("Edge", end="")
-    try:
-        if sys.platform == "win32":
+        try:
             options = EdgeOptions()
             options.add_argument("headless")
             options.add_argument("disable-gpu")
             browser = webdriver.Edge()
             browsers.append("Edge")
             browser.quit()
-            print(" ok")
-    except Exception:
-        print(" brak")
+            print(BROWSER_DETECTED)
+        except Exception:
+            print(BROWSER_NOT_DETECTED)
 
     # dla maca
     if sys.platform == "darwin":
         print("Safari", end="")
-    try:
-        if sys.platform == "darwin":
+        try:
             browser = webdriver.Safari()
             browsers.append("Safari")
             browser.quit()
-            print(" ok")
-    except Exception:
-        print(" brak")
+            print(BROWSER_DETECTED)
+        except Exception:
+            print(BROWSER_NOT_DETECTED)
 
     del browser
     if len(browsers) == 0:
@@ -370,10 +371,10 @@ def main() -> None:
 
     # gry są zapisywane dopiero po przeanalizowaniu całego roku
     print(
-        'gry będą zapisywane do pliku "chessarbiter.pgn" po sprawdzeniu w całości każdego roku'
+        f'gry będą zapisywane do pliku "{FILENAME}" po sprawdzeniu w całości każdego roku'
     )
     # sprawdzenie czy plik istnieje
-    if os.path.isfile("chessarbiter.pgn"):
+    if os.path.isfile(FILENAME):
         print("taki plik już istnieje")
         choose_file = pyip.inputMenu(
             ["nadpisać", "dodać partie na koniec pliku", "anulować"],
@@ -381,7 +382,7 @@ def main() -> None:
             numbered=True,
         )
         if choose_file == "nadpisać":
-            tmp = open("chessarbiter.pgn", "w")
+            tmp = open(FILENAME, "w")
             tmp.close()
         elif choose_file == "anulować":
             sys.exit()
@@ -455,7 +456,7 @@ def main() -> None:
 
                 games = "\n".join(result)
                 # zapis do pliku
-                with open("chessarbiter.pgn", "a") as file:
+                with open(FILENAME, "a") as file:
                     regex = r'Date \"(None|(\?\?\?\?|1899)\.\?\?\.\?\?)\"'
                     file.write(re.sub(regex, f'{i}.??.??', games))
 
