@@ -38,6 +38,9 @@ def main(compare_downloaded: bool = False) -> None:
     response.raise_for_status()
     soup = BeautifulSoup(response.text, "html.parser")
 
+    if not soup:
+        raise ValueError("Cannot parse html")
+
     viewstate = soup.find("input", {"name": "__VIEWSTATE"}).get("value", "")
     viewstate_generator = soup.find("input", {"name": "__VIEWSTATEGENERATOR"}).get("value", "")
     eventvalidation = soup.find("input", {"name": "__EVENTVALIDATION"}).get("value", "")

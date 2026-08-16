@@ -41,7 +41,7 @@ def download_pgn(browser: webdriver.Chrome, data: str) -> None:
         browser.execute_script("arguments[0].scrollIntoView(true);", btn_download)
         time.sleep(0.5)
         btn_download.click()
-    except Exception as e:
+    except Exception:
         print(f"Error processing: {data}")
 
 
@@ -199,7 +199,6 @@ def get_list_of_empty_date_files() -> list[Path]:
             except OSError as e:
                 print(path)
                 print(e)
-                pass
 
     return files
 
@@ -259,7 +258,7 @@ def correct_date_from_cr(
     file: Path,
 ) -> None:
     print(file)
-    tournamentId = file.stem
+    tournament_id = file.stem
     browser.get("https://s2.chess-results.com/turniersuche.aspx?lan=3")
     wait3 = WebDriverWait(browser, 3)
     wait10 = WebDriverWait(browser, 10)
@@ -271,7 +270,7 @@ def correct_date_from_cr(
     )
 
     input_box.click()
-    input_box.send_keys(tournamentId)
+    input_box.send_keys(tournament_id)
 
     input_box.send_keys(Keys.ENTER)
     wait10.until(EC.staleness_of(input_box))
@@ -303,7 +302,7 @@ def correct_date_from_cr(
                 content = content.replace('Date "????.??.??"', new_date)
                 file.write_text(content)
 
-    except TimeoutException | ValueError:
+    except (TimeoutException, ValueError):
         pass
 
 

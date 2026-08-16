@@ -79,17 +79,9 @@ def scrap_livechess(url: str):
 
 
 def json2pgn(data: dict[str, Any ], metadata: dict[str, Any]) -> str:
-    tournament = "?"
-    if metadata["name"]:
-        tournament = str(metadata["name"]).replace('"', "")
-
-    site = "?"
-    if metadata["location"]:
-        site = str(metadata["location"]).replace('"', "")
-
-    date = "????.??.??"
-    if metadata["date"]:
-        date = str(metadata["date"] or "????.??.??").replace("-", ".")
+    tournament = metadata.get("name", "?").replace('"', "")
+    site = metadata.get("location", "?").replace('"', "")
+    date = metadata.get("date", "????.??.??").replace("-", ".")
 
     white = []
     if metadata["white"]:
