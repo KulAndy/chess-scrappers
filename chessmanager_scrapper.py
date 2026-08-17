@@ -3,7 +3,6 @@ import re
 import time
 import traceback
 from io import TextIOWrapper
-from os import PathLike
 
 import undetected_chromedriver as uc
 from selenium.webdriver.chrome.options import Options

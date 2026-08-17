@@ -116,7 +116,7 @@ def json2pgn(data: dict[str, Any], metadata: dict[str, Any]) -> str:
             moves += str(i // 2 + 1) + ". "
         moves += data["moves"][i].split(" ")[0] + " "
     moves += metadata["result"]
-    pgn = f"""
+    return f"""
 [Event "{tournament or "?"}"]
 [Site "{site or "?"}"]
 [Date "{date}"]
@@ -126,4 +126,3 @@ def json2pgn(data: dict[str, Any], metadata: dict[str, Any]) -> str:
 [Result "{metadata["result"] or "*"}"]
 {moves}
 """
-    return pgn

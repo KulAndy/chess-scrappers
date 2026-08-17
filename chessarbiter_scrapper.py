@@ -1,4 +1,5 @@
 # do analizy stron
+import contextlib
 import os
 import re
 import sys
@@ -200,11 +201,9 @@ def search_pgn(
                                 )
                             )
                         except Exception:
-                            try:
+                            with contextlib.suppress(Exception):
                                 # jeśli nie ma wszystkich gier razem to pobierz pojedynczo
                                 manual_download(link_url, browser, found_links, year)
-                            except Exception:
-                                pass
                     elif "lichess.org/broadcast/" in link_url:
                         found_links.append(lichess_download(link_url))
 
@@ -270,10 +269,8 @@ def worker(
                         results_queue.put(result)
                 finally:
                     work_queue.task_done()
-            try:
+            with contextlib.suppress(Exception):
                 input("Chessarbiter czeka na kliknięcie klawisza")
-            except Exception:
-                pass
             browser.quit()
         else:
             print("nie udało się otworzyć przeglądarki")
@@ -394,8 +391,8 @@ def main() -> None:
             numbered=True,
         )
         if choose_file == "nadpisać":
-            tmp = open(FILENAME, "w")
-            tmp.close()
+            with open(FILENAME, "w"):
+                pass
         elif choose_file == "anulować":
             sys.exit()
 
