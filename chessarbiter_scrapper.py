@@ -63,7 +63,7 @@ def manual_download(
             By.CSS_SELECTOR, "#table_pgn > tbody > tr > td > a"
         )
         for link in page_links:
-            href = link.get_attribute("href")
+            href: str | None = link.get_attribute("href")  # type: ignore[no-untyped-call]
             if href is not None:
                 games.append(href)
 
@@ -71,7 +71,7 @@ def manual_download(
         try:
             browser.get(game)
             chess_paste = browser.find_element(By.LINK_TEXT, "PGN")
-            href = chess_paste.get_attribute("href")
+            href = chess_paste.get_attribute("href")  # type: ignore[no-untyped-call]
             if not href:
                 raise ValueError("No href for link PGN")
             res = requests.get(href)
@@ -125,7 +125,7 @@ def search_pgn(
             links = browser.find_elements(By.TAG_NAME, "a")
             for link in links:
                 try:
-                    link_url = link.get_attribute("href")
+                    link_url: str | None = link.get_attribute("href")  # type: ignore[no-untyped-call]
                     if not link_url:
                         continue
 

@@ -7,7 +7,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.ui import WebDriverWait  # type: ignore[attr-defined]
+from selenium.webdriver.support.wait import WebDriverWait
 
 MIN_ACTION_DELAY = 1.5  # seconds
 MAX_ACTION_DELAY = 3.5
@@ -90,7 +90,7 @@ def collect_archived_tournaments(
 
         # === HUMAN SCROLLING ===
         for _ in range(6):
-            actions.send_keys(Keys.PAGE_DOWN).perform()
+            actions.send_keys(Keys.PAGE_DOWN).perform() # type: ignore[no-untyped-call]
             time.sleep(random.uniform(0.4, 0.8))
 
         time.sleep(2.5)  # allow network fetch
@@ -102,7 +102,7 @@ def collect_archived_tournaments(
         )
 
         for link in links:
-            href = link.get_attribute("href")
+            href: str | None = link.get_attribute("href")  # type: ignore[no-untyped-call]
             if href and re.search(
                 r"https://media.idchess.com/(en/)?tournaments/[a-zA-Z\d]+/.+", href
             ):

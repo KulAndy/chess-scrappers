@@ -12,9 +12,9 @@ import chess.pgn
 import requests
 from selenium import webdriver
 from selenium.common.exceptions import TimeoutException
-from selenium.webdriver import Keys
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.select import Select
 from selenium.webdriver.support.wait import WebDriverWait
@@ -56,7 +56,7 @@ def process_tournament_links(browser: webdriver.Chrome) -> None:
     links = browser.find_elements(By.TAG_NAME, "a")
     transmission_ids = set()
     for link in links:
-        href = link.get_attribute("href")
+        href: str | None = link.get_attribute("href") # type: ignore[no-untyped-call]
         if href:
             match = re.search(r"/tnr(\d+)\.aspx", href)
             if match:

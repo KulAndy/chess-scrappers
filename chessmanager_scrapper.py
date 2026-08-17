@@ -14,7 +14,7 @@ download_directory = os.path.expanduser("~/Pobrane")
 os.makedirs(download_directory, exist_ok=True)
 
 options = Options()
-options.page_load_strategy = "eager"
+options.page_load_strategy = "eager"  # type: ignore[attr-defined]
 options.add_argument(
     "user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/122.0 Safari/537.36"
 )
@@ -223,13 +223,13 @@ def process_tournament(tournament: str, output: TextIOWrapper) -> None:
             link.get_attribute("href")
             for link in links
             if link.get_attribute("href") is not None
-            and "lichess.org/broadcast/" in link.get_attribute("href")
+               and "lichess.org/broadcast/" in link.get_attribute("href")
         ]
         livechess_links = [
             link.get_attribute("href")
             for link in links
             if link.get_attribute("href") is not None
-            and "view.livechesscloud.com" in link.get_attribute("href")
+               and "view.livechesscloud.com" in link.get_attribute("href")
         ]
         for lichess_link in lichess_links:
             print("lichess: " + lichess_link)
