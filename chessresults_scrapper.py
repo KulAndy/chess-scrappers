@@ -1,3 +1,4 @@
+import argparse
 import io
 import os
 import re
@@ -304,7 +305,13 @@ def correct_date_from_cr(
         pass
 
 
-def main() -> None:
+def main(
+        *,
+        players: bool = False,
+        last_tournaments: bool = False,
+        last_month: bool = True,
+        entire: bool = False,
+) -> None:
     options = Options()
     options.add_experimental_option(
         "prefs",
@@ -316,29 +323,34 @@ def main() -> None:
         },
     )
     browser = webdriver.Chrome(options=options)
-    #
-    # scrap_players(browser)
-    # scrap_latest_tournaments(browser)
-    #
     today = date.today()
-    first_day_current_month = date.today().replace(day=1)
-    first_day_prev_month = (first_day_current_month - timedelta(days=1)).replace(day=1)
-    first_day_prev_month = first_day_prev_month
-    scrap_tournament_rage(browser, first_day_prev_month, today)
-    #
-    # for i in range(today.year, 2006, -1):
-    #     start_date = date(i, 1, 1)
-    #     end_date = date(i, 6, 30)
-    #     scrap_tournament_rage(browser, start_date, end_date)
-    #     start_date = date(i, 7, 1)
-    #     end_date = date(i, 12, 31)
-    #     scrap_tournament_rage(browser, start_date, end_date)
-    #
-    # for i in range(2006, 1960, -10):
-    #     start_date = date(i - 9, 1, 1)
-    #     end_date = date(i, 12, 31)
-    #     scrap_tournament_rage(browser, start_date, end_date)
-    #
+
+    if players:
+        scrap_players(browser)
+
+    if last_tournaments:
+        scrap_latest_tournaments(browser)
+
+    if last_month:
+        first_day_current_month = date.today().replace(day=1)
+        first_day_prev_month = (first_day_current_month - timedelta(days=1)).replace(day=1)
+        first_day_prev_month = first_day_prev_month
+        scrap_tournament_rage(browser, first_day_prev_month, today)
+
+    if entire:
+        for i in range(today.year, 2006, -1):
+            start_date = date(i, 1, 1)
+            end_date = date(i, 6, 30)
+            scrap_tournament_rage(browser, start_date, end_date)
+            start_date = date(i, 7, 1)
+            end_date = date(i, 12, 31)
+            scrap_tournament_rage(browser, start_date, end_date)
+
+        for i in range(2006, 1960, -10):
+            start_date = date(i - 9, 1, 1)
+            end_date = date(i, 12, 31)
+            scrap_tournament_rage(browser, start_date, end_date)
+
     print("missing tag")
     add_missing_date_tag()
 
@@ -353,4 +365,35 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--players",
+        action="store_true",
+        help="Scrap all players by FIDE ID"
+    )
+
+    parser.add_argument(
+        "--last_tournaments",
+        action="store_true",
+        help="Scrap tournaments marked as with games"
+    )
+
+    parser.add_argument(
+        "--last_month",
+        action="store_true",
+        help="Scrap from last month"
+    )
+
+    parser.add_argument(
+        "--entire",
+        action="store_true",
+        help="Scrap all games"
+    )
+    args = parser.parse_args()
+
+    main(
+        players=args.players,
+        last_tournaments=args.last_tournaments,
+        last_month=args.last_month,
+        entire=args.entire
+    )
