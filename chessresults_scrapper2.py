@@ -23,16 +23,18 @@ def get_hidden_fields(soup: BeautifulSoup) -> dict[str, str]:
 def main(compare_downloaded: bool = False) -> None:
     session = requests.Session()
 
-    session.headers.update({
-        "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36",
-        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
-        "Accept-Language": "pl-PL,pl;q=0.7",
-        "Content-Type": "application/x-www-form-urlencoded",
-        "Referer": PARTIE_SUCHE_URL,
-        "Origin": "https://s2.chess-results.com",
-        "DNT": "1",
-        "Upgrade-Insecure-Requests": "1",
-    })
+    session.headers.update(
+        {
+            "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
+            "Accept-Language": "pl-PL,pl;q=0.7",
+            "Content-Type": "application/x-www-form-urlencoded",
+            "Referer": PARTIE_SUCHE_URL,
+            "Origin": "https://s2.chess-results.com",
+            "DNT": "1",
+            "Upgrade-Insecure-Requests": "1",
+        }
+    )
 
     response = session.get(CR_URL)
     response.raise_for_status()
@@ -42,7 +44,9 @@ def main(compare_downloaded: bool = False) -> None:
         raise ValueError("Cannot parse html")
 
     viewstate = soup.find("input", {"name": "__VIEWSTATE"}).get("value", "")
-    viewstate_generator = soup.find("input", {"name": "__VIEWSTATEGENERATOR"}).get("value", "")
+    viewstate_generator = soup.find("input", {"name": "__VIEWSTATEGENERATOR"}).get(
+        "value", ""
+    )
     eventvalidation = soup.find("input", {"name": "__EVENTVALIDATION"}).get("value", "")
 
     data = {
@@ -64,7 +68,7 @@ def main(compare_downloaded: bool = False) -> None:
         flags=re.IGNORECASE,
     )
     transmission_ids = set()
-    for href, tournament_id in matches:
+    for _href, tournament_id in matches:
         downloaded = DOWNLOAD_DIR / f"{tournament_id}.pgn"
         if not compare_downloaded or not downloaded.exists():
             transmission_ids.add(tournament_id)
@@ -118,7 +122,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--compare-downloaded",
         action="store_true",
-        help="Check that file exists in downloaded"
+        help="Check that file exists in downloaded",
     )
 
     args = parser.parse_args()

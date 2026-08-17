@@ -6,7 +6,7 @@ import chessmanager_scrapper
 import chessresults_scrapper
 import media_ichess_scrapper
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     processes = [
         multiprocessing.Process(target=chessmanager_scrapper.main),
         multiprocessing.Process(target=chessresults_scrapper.main),

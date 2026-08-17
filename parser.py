@@ -23,7 +23,10 @@ def lichess_download(link: str):
         if match:
             lichess_url = "https://lichess.org/api/broadcast/" + match.group(1)
 
-        match = re.search(r"https://lichess\.org/broadcast/([^/?#]+/[^/?#]+/[^/?#]+)(/[^/?#]+)?$", link)
+        match = re.search(
+            r"https://lichess\.org/broadcast/([^/?#]+/[^/?#]+/[^/?#]+)(/[^/?#]+)?$",
+            link,
+        )
         if match:
             lichess_url = "https://lichess.org/api/broadcast/" + match.group(1)
 
@@ -39,7 +42,10 @@ def lichess_download(link: str):
                     ids.add(data["tour"]["id"])
 
                 for tour_id in ids:
-                    res = requests.get(f"https://lichess.org/api/broadcast/{tour_id}.pgn", timeout=TIMEOUT)
+                    res = requests.get(
+                        f"https://lichess.org/api/broadcast/{tour_id}.pgn",
+                        timeout=TIMEOUT,
+                    )
                     if res.ok:
                         pgn += res.text + "\n\n"
 
@@ -55,20 +61,20 @@ def scrap_livechess(url: str):
     tournament_id = parsed_url.fragment
     tournament_response = requests.get(
         f"https://1.pool.livechesscloud.com/get/{tournament_id}/tournament.json",
-        timeout=TIMEOUT
+        timeout=TIMEOUT,
     )
     tournament_json = tournament_response.json()
     rounds = tournament_json["rounds"]
     for i in range(len(rounds)):
         round_response = requests.get(
             f"https://1.pool.livechesscloud.com/get/{tournament_id}/round-{i + 1}/index.json",
-            timeout=TIMEOUT
+            timeout=TIMEOUT,
         )
         round_json = round_response.json()
         for j in range(len(round_json["pairings"])):
             response = requests.get(
                 f"https://1.pool.livechesscloud.com/get/{tournament_id}/round-{i + 1}/game-{j + 1}.json?poll",
-                timeout=TIMEOUT
+                timeout=TIMEOUT,
             )
             if response.ok:
                 metadata = round_json["pairings"][j]

@@ -4,7 +4,7 @@ import re
 import time
 import zipfile
 from contextlib import redirect_stderr
-from datetime import datetime, date, timedelta
+from datetime import date, datetime, timedelta
 from pathlib import Path
 
 import chess.pgn
@@ -25,7 +25,9 @@ DOWNLOAD_DIR.mkdir(parents=True, exist_ok=True)
 def accept_cookies(browser: webdriver.Chrome) -> None:
     try:
         btn_allow = WebDriverWait(browser, 5).until(
-            EC.element_to_be_clickable((By.ID, 'CybotCookiebotDialogBodyLevelButtonLevelOptinAllowAll'))
+            EC.element_to_be_clickable(
+                (By.ID, "CybotCookiebotDialogBodyLevelButtonLevelOptinAllowAll")
+            )
         )
         btn_allow.click()
         time.sleep(1)
@@ -36,7 +38,7 @@ def accept_cookies(browser: webdriver.Chrome) -> None:
 def download_pgn(browser: webdriver.Chrome, data: str) -> None:
     try:
         btn_download = WebDriverWait(browser, 10).until(
-            EC.element_to_be_clickable((By.ID, 'P1_linkbutton_DownLoadPGN'))
+            EC.element_to_be_clickable((By.ID, "P1_linkbutton_DownLoadPGN"))
         )
         browser.execute_script("arguments[0].scrollIntoView(true);", btn_download)
         time.sleep(0.5)
@@ -46,13 +48,15 @@ def download_pgn(browser: webdriver.Chrome, data: str) -> None:
 
 
 def process_tournament_links(browser: webdriver.Chrome) -> None:
-    WebDriverWait(browser, 10).until(EC.presence_of_element_located((By.TAG_NAME, 'body')))
+    WebDriverWait(browser, 10).until(
+        EC.presence_of_element_located((By.TAG_NAME, "body"))
+    )
     time.sleep(3)
 
-    links = browser.find_elements(By.TAG_NAME, 'a')
+    links = browser.find_elements(By.TAG_NAME, "a")
     transmission_ids = set()
     for link in links:
-        href = link.get_attribute('href')
+        href = link.get_attribute("href")
         if href:
             match = re.search(r"/tnr(\d+)\.aspx", href)
             if match:
@@ -76,16 +80,16 @@ def scrap_latest_tournaments(browser: webdriver.Chrome) -> None:
     browser.get("https://chess-results.com/Default.aspx?lan=3")
 
     accept_cookies(browser)
-    tournament_select = browser.find_element(By.ID, 'combo_tur_sel')
+    tournament_select = browser.find_element(By.ID, "combo_tur_sel")
     select = Select(tournament_select)
     select.select_by_index(7)
     process_tournament_links(browser)
 
 
 def scrap_tournament_rage(
-        browser: webdriver.Chrome,
-        start_date: date,
-        end_date: date,
+    browser: webdriver.Chrome,
+    start_date: date,
+    end_date: date,
 ) -> None:
     browser.get("https://s2.chess-results.com/turniersuche.aspx?lan=3")
     print(start_date.strftime("%Y-%m-%d"), end_date.strftime("%Y-%m-%d"))
@@ -95,21 +99,15 @@ def scrap_tournament_rage(
     accept_cookies(browser)
 
     time.sleep(3)
-    von_input = wait.until(
-        EC.presence_of_element_located((By.ID, "P1_txt_von_tag"))
-    )
+    von_input = wait.until(EC.presence_of_element_located((By.ID, "P1_txt_von_tag")))
     von_input.clear()
     von_input.send_keys(start_date.strftime("%d%m%Y"))
 
-    bis_input = wait.until(
-        EC.presence_of_element_located((By.ID, "P1_txt_bis_tag"))
-    )
+    bis_input = wait.until(EC.presence_of_element_located((By.ID, "P1_txt_bis_tag")))
     bis_input.clear()
     bis_input.send_keys(end_date.strftime("%d%m%Y"))
 
-    zu_ende_checkbox = wait.until(
-        EC.element_to_be_clickable((By.ID, "P1_cbox_zuEnde"))
-    )
+    zu_ende_checkbox = wait.until(EC.element_to_be_clickable((By.ID, "P1_cbox_zuEnde")))
     if not zu_ende_checkbox.is_selected():
         zu_ende_checkbox.click()
 
@@ -120,11 +118,7 @@ def scrap_tournament_rage(
         partien_checkbox.click()
 
     select_rows = Select(
-        wait.until(
-            EC.presence_of_element_located(
-                (By.ID, "P1_combo_anzahl_zeilen")
-            )
-        )
+        wait.until(EC.presence_of_element_located((By.ID, "P1_combo_anzahl_zeilen")))
     )
     select_rows.select_by_index(5)
 
@@ -133,7 +127,9 @@ def scrap_tournament_rage(
 
 
 def download_fide_list() -> None:
-    response = requests.get("https://ratings.fide.com/download/standard_rating_list.zip")
+    response = requests.get(
+        "https://ratings.fide.com/download/standard_rating_list.zip"
+    )
     response.raise_for_status()
     with zipfile.ZipFile(io.BytesIO(response.content)) as z:
         z.extractall()
@@ -152,7 +148,9 @@ def scrap_players(browser: webdriver.Chrome) -> None:
             browser.get("https://s1.chess-results.com/partiesuche.aspx?lan=3")
             accept_cookies(browser)
             select_box = wait10.until(
-                EC.presence_of_element_located((By.NAME, "ctl00$P1$combo_anzahl_zeilen"))
+                EC.presence_of_element_located(
+                    (By.NAME, "ctl00$P1$combo_anzahl_zeilen")
+                )
             )
             select = Select(select_box)
             select.select_by_value("5")
@@ -191,10 +189,7 @@ def get_list_of_empty_date_files() -> list[Path]:
         if path.is_file():
             try:
                 with path.open("r", errors="ignore") as f:
-                    if any(
-                            needle1 in line or
-                            needle2 in line
-                            for line in f):
+                    if any(needle1 in line or needle2 in line for line in f):
                         files.append(path)
             except OSError as e:
                 print(path)
@@ -221,17 +216,14 @@ def add_missing_date_tag() -> None:
             tmp_name = "__tmp"
             if os.path.exists(tmp_name):
                 os.unlink(tmp_name)
-            with open(path, "r") as fin, open(tmp_name, 'w') as fout:
+            with open(path) as fin, open(tmp_name, "w") as fout:
                 while True:
                     game = chess.pgn.read_game(fin)
                     if game is None:
                         break
 
                     headers = game.headers
-                    if (
-                            "Date" not in headers or
-                            not date_re.match(headers["Date"])
-                    ):
+                    if "Date" not in headers or not date_re.match(headers["Date"]):
                         headers["Date"] = ""
                         ok = False
                         print("not ok", path)
@@ -254,8 +246,8 @@ def add_missing_date_tag() -> None:
 
 
 def correct_date_from_cr(
-        browser: webdriver.Chrome,
-        file: Path,
+    browser: webdriver.Chrome,
+    file: Path,
 ) -> None:
     print(file)
     tournament_id = file.stem
@@ -276,9 +268,7 @@ def correct_date_from_cr(
     wait10.until(EC.staleness_of(input_box))
     try:
         rows = wait3.until(
-            EC.presence_of_all_elements_located(
-                (By.CSS_SELECTOR, ".CRs2 tbody tr")
-            )
+            EC.presence_of_all_elements_located((By.CSS_SELECTOR, ".CRs2 tbody tr"))
         )
 
         rows = rows[::]
@@ -294,8 +284,16 @@ def correct_date_from_cr(
                 end_date = datetime.strptime(end_date_string, "%Y/%m/%d").date()
 
                 new_date = start_date.strftime("%Y.")
-                new_date += start_date.strftime("%m.") if start_date.month == end_date.month else "??."
-                new_date += start_date.strftime("%d") if start_date.month == end_date.month else "??"
+                new_date += (
+                    start_date.strftime("%m.")
+                    if start_date.month == end_date.month
+                    else "??."
+                )
+                new_date += (
+                    start_date.strftime("%d")
+                    if start_date.month == end_date.month
+                    else "??"
+                )
 
                 content = file.read_text()
                 content = content.replace('Date ""', new_date)
@@ -354,5 +352,5 @@ def main() -> None:
     browser.quit()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

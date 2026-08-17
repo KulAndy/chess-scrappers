@@ -38,9 +38,7 @@ def scrap_tournament(url: str, browser: webdriver.Chrome) -> None:
     human_delay(MIN_ACTION_DELAY, MAX_ACTION_DELAY)
 
     kebab_button = wait.until(
-        EC.element_to_be_clickable(
-            (By.XPATH, "//button[.//img[@alt='kebab']]")
-        )
+        EC.element_to_be_clickable((By.XPATH, "//button[.//img[@alt='kebab']]"))
     )
     kebab_button.click()
     human_delay(MIN_ACTION_DELAY, MAX_ACTION_DELAY)
@@ -61,7 +59,9 @@ def scrap_tournament(url: str, browser: webdriver.Chrome) -> None:
     download_pgn.click()
 
 
-def collect_archived_tournaments(browser: webdriver.Chrome, timeout_minutes: int = 30) -> list[str]:
+def collect_archived_tournaments(
+    browser: webdriver.Chrome, timeout_minutes: int = 30
+) -> list[str]:
     browser.get("https://media.idchess.com/en/tournaments/archived")
     wait_for_page_load(browser)
 
@@ -91,12 +91,14 @@ def collect_archived_tournaments(browser: webdriver.Chrome, timeout_minutes: int
         # Collect links
         links = browser.find_elements(
             By.XPATH,
-            "//a[contains(@href, '/tournaments/') and not(contains(@href, '/archived'))]"
+            "//a[contains(@href, '/tournaments/') and not(contains(@href, '/archived'))]",
         )
 
         for link in links:
             href = link.get_attribute("href")
-            if href and re.search(r"https://media.idchess.com/(en/)?tournaments/[a-zA-Z\d]+/.+", href):
+            if href and re.search(
+                r"https://media.idchess.com/(en/)?tournaments/[a-zA-Z\d]+/.+", href
+            ):
                 collected_links.add(href)
 
         if len(collected_links) == previous_count:
@@ -127,10 +129,7 @@ def main():
             print(f"({idx}) Downloading: {link}")
             scrap_tournament(link, browser)
 
-            human_delay(
-                MIN_TOURNAMENT_DELAY,
-                MAX_TOURNAMENT_DELAY
-            )
+            human_delay(MIN_TOURNAMENT_DELAY, MAX_TOURNAMENT_DELAY)
 
             if idx % COOLDOWN_EVERY == 0:
                 print(f"Cooldown for {COOLDOWN_SECONDS}s")
@@ -144,5 +143,5 @@ def main():
     browser.quit()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

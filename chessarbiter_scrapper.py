@@ -6,16 +6,20 @@ import time
 import traceback
 from argparse import ArgumentError
 from datetime import datetime
+
 # kolejki są fifo
-from queue import Queue, Empty
+from queue import Empty, Queue
+
 # współbierzność
 from threading import Thread
 from urllib.parse import unquote
 
 import bs4
+
 # sprawdza poprawność danych
 import pyinputplus as pyip
 import requests
+
 # kontrola przeglądarki
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options as ChromeOptions
@@ -23,8 +27,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.edge.options import Options as EdgeOptions
 from selenium.webdriver.firefox.options import Options as FirefoxOptions
 
-from Throttle import Throttle
 from parser import lichess_download, scrap_livechess
+from Throttle import Throttle
 
 FILENAME = "chessarbiter.pgn"
 BROWSER_DETECTED = " ok"
@@ -32,10 +36,10 @@ BROWSER_NOT_DETECTED = " brak"
 
 
 def manual_download(
-        url: str,
-        browser: webdriver.Chrome | webdriver.Firefox | webdriver.Edge | webdriver.Safari,
-        found_links: list[str],
-        year: int,
+    url: str,
+    browser: webdriver.Chrome | webdriver.Firefox | webdriver.Edge | webdriver.Safari,
+    found_links: list[str],
+    year: int,
 ) -> None:
     browser.get(url)
     # wyświetlanie 100 gier
@@ -100,9 +104,9 @@ def manual_download(
 
 
 def search_pgn(
-        tournament: bs4.element.Tag,
-        browser: webdriver.Chrome | webdriver.Firefox | webdriver.Edge | webdriver.Safari,
-        year: int,
+    tournament: bs4.element.Tag,
+    browser: webdriver.Chrome | webdriver.Firefox | webdriver.Edge | webdriver.Safari,
+    year: int,
 ) -> list[str]:
     """szukanie pgnów"""
     found_links = []
@@ -137,7 +141,7 @@ def search_pgn(
                                 )
                             else:
                                 if not re.search(
-                                        EMPTY_YEAR_PATTERN, remote_file.text
+                                    EMPTY_YEAR_PATTERN, remote_file.text
                                 ) and not re.search(
                                     JS_PATTERN,
                                     remote_file.text,
@@ -156,8 +160,8 @@ def search_pgn(
                                 r"chessarbiter\.com/turnieje/2\d{3}/t[id]_\d+/(?=.*\.[a-z]{2,3})"
                             )
                             if over_chessarbiter_url.search(link_url) and not re.search(
-                                    JS_PATTERN,
-                                    remote_file.text,
+                                JS_PATTERN,
+                                remote_file.text,
                             ):
                                 found_links.append(
                                     re.sub(
@@ -213,11 +217,11 @@ def search_pgn(
 
 
 def worker(
-        work_queue: Queue,
-        results_queue: Queue,
-        throttle: Throttle,
-        choose_browser: str,
-        year: int,
+    work_queue: Queue,
+    results_queue: Queue,
+    throttle: Throttle,
+    choose_browser: str,
+    year: int,
 ) -> None:
     # switch-case w pythonie
     try:
@@ -251,10 +255,7 @@ def worker(
                 except Exception as err:
                     results_queue.put(err)
                 else:
-                    if (
-                            isinstance(result, (list, tuple))
-                            and len(result) > 0
-                    ):
+                    if isinstance(result, (list, tuple)) and len(result) > 0:
                         results_queue.put(result)
                 finally:
                     work_queue.task_done()
@@ -458,8 +459,8 @@ def main() -> None:
                 games = "\n".join(result)
                 # zapis do pliku
                 with open(FILENAME, "a") as file:
-                    regex = r'Date \"(None|(\?\?\?\?|1899)\.\?\?\.\?\?)\"'
-                    file.write(re.sub(regex, f'{i}.??.??', games))
+                    regex = r"Date \"(None|(\?\?\?\?|1899)\.\?\?\.\?\?)\""
+                    file.write(re.sub(regex, f"{i}.??.??", games))
 
         except Exception as err:
             print(err)

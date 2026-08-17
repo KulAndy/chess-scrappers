@@ -1,7 +1,7 @@
 import os
 import re
 from concurrent.futures import ProcessPoolExecutor
-from datetime import datetime, date
+from datetime import date, datetime
 from io import StringIO
 from pathlib import Path
 from urllib.parse import urlparse
@@ -71,7 +71,7 @@ def decompress_and_fix(filename: str) -> None:
         else:
             print(f"[SKIP] Already decompressed: {output_filename}")
 
-        with open(output_path, "r", encoding="utf-8") as f:
+        with open(output_path, encoding="utf-8") as f:
             raw_content = f.read()
 
         timestamp = output_path.stat().st_mtime
@@ -93,7 +93,11 @@ def decompress_and_fix(filename: str) -> None:
         with open(tmp_path, "w", encoding="utf-8") as tmp_file:
             for game in games:
                 headers = game.headers
-                if "Date" not in headers or headers["Date"] in {"????.??.??", "0000.00.00", ""}:
+                if "Date" not in headers or headers["Date"] in {
+                    "????.??.??",
+                    "0000.00.00",
+                    "",
+                }:
                     headers["Date"] = default_date
                 tmp_file.write(str(game).strip() + "\n\n")
                 tmp_file.flush()
@@ -118,5 +122,5 @@ def main() -> None:
         executor.map(decompress_and_fix, files)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

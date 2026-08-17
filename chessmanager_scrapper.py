@@ -21,10 +21,7 @@ options.add_argument(
 options.add_argument("--start-maximized")
 options.add_argument("--disable-blink-features=AutomationControlled")
 options.add_argument("--disable-javascript")
-browser = uc.Chrome(
-    version_main=151,
-    options=options
-)
+browser = uc.Chrome(version_main=151, options=options)
 
 countries = [
     "POL",
@@ -214,7 +211,6 @@ countries = [
     # "ZIM",
     # "CFR",
     # "FQE"
-
 ]
 
 
@@ -223,27 +219,30 @@ def process_tournament(tournament: str, output: TextIOWrapper):
     time.sleep(3)
     try:
         links = browser.find_elements(By.TAG_NAME, "a")
-        lichess_links = [link.get_attribute("href") for link in links
-                         if link.get_attribute(
-                "href") is not None and "lichess.org/broadcast/" in link.get_attribute(
-                "href")]
-        livechess_links = [link.get_attribute("href") for link in links
-                           if
-                           link.get_attribute(
-                               "href") is not None and "view.livechesscloud.com" in link.get_attribute(
-                               "href")]
+        lichess_links = [
+            link.get_attribute("href")
+            for link in links
+            if link.get_attribute("href") is not None
+            and "lichess.org/broadcast/" in link.get_attribute("href")
+        ]
+        livechess_links = [
+            link.get_attribute("href")
+            for link in links
+            if link.get_attribute("href") is not None
+            and "view.livechesscloud.com" in link.get_attribute("href")
+        ]
         for lichess_link in lichess_links:
             print("lichess: " + lichess_link)
             try:
                 output.write(lichess_download(lichess_link))
-            except:
+            except Exception:
                 print("Error downloading: " + lichess_link)
 
         for livechess_link in livechess_links:
             print("livechess: " + livechess_link)
             try:
                 output.write(scrap_livechess(livechess_link))
-            except:
+            except Exception:
                 print("Error downloading: " + livechess_link)
 
     except TypeError as e:
@@ -254,11 +253,15 @@ def process_tournament(tournament: str, output: TextIOWrapper):
 def process_pseudo_human(output: TextIOWrapper):
     for country in countries:
         try:
-            browser.get(f"https://www.chessmanager.com/pl/tournaments/finished?country={country}")
+            browser.get(
+                f"https://www.chessmanager.com/pl/tournaments/finished?country={country}"
+            )
 
-            last_elem = browser.find_element(By.CSS_SELECTOR,
-                                             "body > div.pusher > div.ui.stackable.grid.container > "
-                                             "div.twelve.wide.column > div.ui.centered.pagination.menu > a:nth-child(8)")
+            last_elem = browser.find_element(
+                By.CSS_SELECTOR,
+                "body > div.pusher > div.ui.stackable.grid.container > "
+                "div.twelve.wide.column > div.ui.centered.pagination.menu > a:nth-child(8)",
+            )
             try:
                 last_elem_value = int(last_elem.text)
             except ValueError:
@@ -266,10 +269,16 @@ def process_pseudo_human(output: TextIOWrapper):
 
             for i in range(last_elem_value + 1):
                 browser.get(
-                    f"https://www.chessmanager.com/pl/tournaments/finished?country={country}&city=&city_radius=0&offset={i * 50}")
-                tournaments = [link.get_attribute("href") for link in browser.find_elements(By.TAG_NAME, "a")
-                               if re.match(r"https://www\.chessmanager\.com/[\w-]*/tournaments/\d+",
-                                           link.get_attribute("href"))]
+                    f"https://www.chessmanager.com/pl/tournaments/finished?country={country}&city=&city_radius=0&offset={i * 50}"
+                )
+                tournaments = [
+                    link.get_attribute("href")
+                    for link in browser.find_elements(By.TAG_NAME, "a")
+                    if re.match(
+                        r"https://www\.chessmanager\.com/[\w-]*/tournaments/\d+",
+                        link.get_attribute("href"),
+                    )
+                ]
                 for tournament in tournaments:
                     process_tournament(tournament, output)
 
@@ -284,10 +293,7 @@ def process_bot(output: TextIOWrapper):
     browser.get("https://www.chessmanager.com/en-us/tournaments/sitemap.xml")
 
     locs = browser.find_elements(By.XPATH, "//*[local-name()='loc']")
-    urls = [
-        node.get_attribute("textContent")
-        for node in locs
-    ]
+    urls = [node.get_attribute("textContent") for node in locs]
 
     for url in urls:
         process_tournament(url, output)
@@ -310,9 +316,9 @@ def main():
 
 
 def check_for_crdownload_files(folder_path):
-    crdownload_files = [f for f in os.listdir(folder_path) if f.endswith('.crdownload')]
+    crdownload_files = [f for f in os.listdir(folder_path) if f.endswith(".crdownload")]
     return len(crdownload_files) > 0
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

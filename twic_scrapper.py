@@ -24,7 +24,7 @@ def download_file(url, dest_path):
         }
         response = requests.get(url, headers=headers, stream=True)
         if response.status_code == 200:
-            with open(dest_path, 'wb') as file:
+            with open(dest_path, "wb") as file:
                 for chunk in response.iter_content(chunk_size=8192):
                     file.write(chunk)
             print(f"Downloaded: {dest_path}")
@@ -36,7 +36,7 @@ def download_file(url, dest_path):
 
 def unzip_file(zip_path, extract_dir):
     try:
-        with ZipFile(zip_path, 'r') as zip_ref:
+        with ZipFile(zip_path, "r") as zip_ref:
             zip_ref.extractall(extract_dir)
     except Exception as e:
         print(f"Failed to unzip {zip_path}: {e}")
