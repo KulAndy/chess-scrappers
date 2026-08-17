@@ -334,7 +334,6 @@ def main(
     if last_month:
         first_day_current_month = date.today().replace(day=1)
         first_day_prev_month = (first_day_current_month - timedelta(days=1)).replace(day=1)
-        first_day_prev_month = first_day_prev_month
         scrap_tournament_rage(browser, first_day_prev_month, today)
 
     if entire:
