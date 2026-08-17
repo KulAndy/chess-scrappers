@@ -1,22 +1,22 @@
 import io
 import os
-import time
 import re
+import time
 import zipfile
 from contextlib import redirect_stderr
 from datetime import datetime, date, timedelta
 from pathlib import Path
-import chess.pgn
 
+import chess.pgn
 import requests
 from selenium import webdriver
+from selenium.common.exceptions import TimeoutException
 from selenium.webdriver import Keys
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.select import Select
 from selenium.webdriver.support.wait import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import TimeoutException
 
 DOWNLOAD_DIR = Path.home() / "Dokumenty" / "chess-results_pgns"
 DOWNLOAD_DIR.mkdir(parents=True, exist_ok=True)
@@ -83,9 +83,9 @@ def scrap_latest_tournaments(browser: webdriver.Chrome) -> None:
 
 
 def scrap_tournament_rage(
-    browser: webdriver.Chrome,
-    start_date: date,
-    end_date: date,
+        browser: webdriver.Chrome,
+        start_date: date,
+        end_date: date,
 ) -> None:
     browser.get("https://s2.chess-results.com/turniersuche.aspx?lan=3")
     print(start_date.strftime("%Y-%m-%d"), end_date.strftime("%Y-%m-%d"))
@@ -254,8 +254,8 @@ def add_missing_date_tag() -> None:
 
 
 def correct_date_from_cr(
-    browser: webdriver.Chrome,
-    file: Path,
+        browser: webdriver.Chrome,
+        file: Path,
 ) -> None:
     print(file)
     tournament_id = file.stem

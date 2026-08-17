@@ -2,6 +2,7 @@ import re
 from threading import Semaphore
 from typing import Any
 from urllib.parse import urlparse
+
 import requests
 from unidecode import unidecode
 
@@ -78,7 +79,7 @@ def scrap_livechess(url: str):
     return unidecode(pgn)
 
 
-def json2pgn(data: dict[str, Any ], metadata: dict[str, Any]) -> str:
+def json2pgn(data: dict[str, Any], metadata: dict[str, Any]) -> str:
     tournament = metadata.get("name", "?").replace('"', "")
     site = metadata.get("location", "?").replace('"', "")
     date = metadata.get("date", "????.??.??").replace("-", ".")

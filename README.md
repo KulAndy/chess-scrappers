@@ -1,4 +1,5 @@
 # Chess pgns scrapper
+
 ## Project structure
 
 * `parser` - module with functions to get games from lichess and livechess
@@ -6,4 +7,5 @@
 * `chessbase_scrapper` - get games from [chessbase live](https://live.chessbase.com/en/History)
 * `chessmanager_scrapper` - get games from [chessmanager](https://www.chessmanager.com/pl/tournaments)
 * `chessresults_scrapper` - get games from [chess results](https://chess-results.com/)
+* `media_ichess_scrapper` - get games from [chess results]([https://chess-results.com](https://media.idchess.com/)](https://media.idchess.com/en/tournaments/archived)
 * `twic_scrapper` - get games from [twic](https://theweekinchess.com/?go)

@@ -21,3 +21,4 @@
 /standard_rating_list.txt
 .venv/
 __pycache__/
+/chessresults.pgn

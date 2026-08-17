@@ -30,11 +30,12 @@ FILENAME = "chessarbiter.pgn"
 BROWSER_DETECTED = " ok"
 BROWSER_NOT_DETECTED = " brak"
 
+
 def manual_download(
-    url: str,
-    browser: webdriver.Chrome | webdriver.Firefox | webdriver.Edge | webdriver.Safari,
-    found_links: list[str],
-    year: int,
+        url: str,
+        browser: webdriver.Chrome | webdriver.Firefox | webdriver.Edge | webdriver.Safari,
+        found_links: list[str],
+        year: int,
 ) -> None:
     browser.get(url)
     # wyświetlanie 100 gier
@@ -99,9 +100,9 @@ def manual_download(
 
 
 def search_pgn(
-    tournament: bs4.element.Tag,
-    browser: webdriver.Chrome | webdriver.Firefox | webdriver.Edge | webdriver.Safari,
-    year: int,
+        tournament: bs4.element.Tag,
+        browser: webdriver.Chrome | webdriver.Firefox | webdriver.Edge | webdriver.Safari,
+        year: int,
 ) -> list[str]:
     """szukanie pgnów"""
     found_links = []
@@ -155,16 +156,16 @@ def search_pgn(
                                 r"chessarbiter\.com/turnieje/2\d{3}/t[id]_\d+/(?=.*\.[a-z]{2,3})"
                             )
                             if over_chessarbiter_url.search(link_url) and not re.search(
-                                        JS_PATTERN,
+                                    JS_PATTERN,
+                                    remote_file.text,
+                            ):
+                                found_links.append(
+                                    re.sub(
+                                        EMPTY_YEAR_PATTERN,
+                                        f"{year}.??.??",
                                         remote_file.text,
-                                ):
-                                    found_links.append(
-                                        re.sub(
-                                            EMPTY_YEAR_PATTERN,
-                                            f"{year}.??.??",
-                                            remote_file.text,
-                                        )
                                     )
+                                )
                     # jeśli jest zakładka pgn
                     elif "pgn.html" in link_url:
                         tournament_url = "/".join(link_url.split("/")[:-1])
@@ -212,11 +213,11 @@ def search_pgn(
 
 
 def worker(
-    work_queue: Queue,
-    results_queue: Queue,
-    throttle: Throttle,
-    choose_browser: str,
-    year: int,
+        work_queue: Queue,
+        results_queue: Queue,
+        throttle: Throttle,
+        choose_browser: str,
+        year: int,
 ) -> None:
     # switch-case w pythonie
     try:

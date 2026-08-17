@@ -4,8 +4,8 @@ import time
 import traceback
 from io import TextIOWrapper
 
-from selenium.webdriver.chrome.options import Options
 import undetected_chromedriver as uc
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 
 from parser import lichess_download, scrap_livechess

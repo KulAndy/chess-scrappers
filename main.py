@@ -1,4 +1,5 @@
 import multiprocessing
+
 import chessarbiter_scrapper
 import chessbase_scrapper
 import chessmanager_scrapper

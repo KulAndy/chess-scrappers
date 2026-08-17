@@ -18,7 +18,7 @@ def main():
         ]
 
         print("Extracted links:")
-        with open("chessbase.pgn",'w') as output:
+        with open("chessbase.pgn", 'w') as output:
             for link in links:
                 tournament_link = f"https://live.chessbase.com{link}"
                 print(tournament_link)

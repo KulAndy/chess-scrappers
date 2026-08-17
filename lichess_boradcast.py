@@ -1,14 +1,14 @@
 import os
 import re
+from concurrent.futures import ProcessPoolExecutor
 from datetime import datetime, date
+from io import StringIO
 from pathlib import Path
+from urllib.parse import urlparse
 
+import chess.pgn
 import requests
 import zstandard as zstd
-import chess.pgn
-from io import StringIO
-from urllib.parse import urlparse
-from concurrent.futures import ProcessPoolExecutor
 
 DOWNLOAD_DIR = "lichess_downloaded"
 PGN_DIR = "lichess_pgns"
@@ -49,7 +49,7 @@ def decompress_and_fix(filename: str) -> None:
 
     src_path = os.path.join(DOWNLOAD_DIR, filename)
     output_filename = filename.replace(".zst", "")
-    output_path = Path(PGN_DIR) /  output_filename
+    output_path = Path(PGN_DIR) / output_filename
 
     match = re.search(r"(\d{4})-(\d{2})", filename)
     if not match:
