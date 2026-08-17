@@ -10,7 +10,7 @@ download_semaphore = Semaphore(2)
 TIMEOUT = 10
 
 
-def lichess_download(link: str):
+def lichess_download(link: str) -> str:
     res = requests.get(link, timeout=TIMEOUT)
     if res.ok:
         link = res.url
@@ -55,7 +55,7 @@ def lichess_download(link: str):
         return unidecode(pgn)
 
 
-def scrap_livechess(url: str):
+def scrap_livechess(url: str) -> str:
     pgn = ""
     parsed_url = urlparse(url)
     tournament_id = parsed_url.fragment
@@ -90,23 +90,23 @@ def json2pgn(data: dict[str, Any], metadata: dict[str, Any]) -> str:
     site = metadata.get("location", "?").replace('"', "")
     date = metadata.get("date", "????.??.??").replace("-", ".")
 
-    white = []
     if metadata["white"]:
+        white_parts = []
         if metadata["white"]["lname"]:
-            white.append(metadata["white"]["lname"].replace('"', ""))
+            white_parts.append(metadata["white"]["lname"].replace('"', ""))
         if metadata["white"]["fname"]:
-            white.append(metadata["white"]["fname"].replace('"', ""))
-        white = ", ".join(white)
+            white_parts.append(metadata["white"]["fname"].replace('"', ""))
+        white = ", ".join(white_parts)
     else:
         white = "N, N"
 
-    black = []
     if metadata["black"]:
+        black_parts = []
         if metadata["black"]["lname"]:
-            black.append(metadata["black"]["lname"].replace('"', ""))
+            black_parts.append(metadata["black"]["lname"].replace('"', ""))
         if metadata["black"]["fname"]:
-            black.append(metadata["black"]["fname"].replace('"', ""))
-        black = ", ".join(black)
+            black_parts.append(metadata["black"]["fname"].replace('"', ""))
+        black = ", ".join(black_parts)
     else:
         black = "N, N"
 

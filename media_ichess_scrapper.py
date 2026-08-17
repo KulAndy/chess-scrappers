@@ -7,7 +7,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support.ui import WebDriverWait  # type: ignore[attr-defined]
 
 MIN_ACTION_DELAY = 1.5  # seconds
 MAX_ACTION_DELAY = 3.5
@@ -19,9 +19,16 @@ COOLDOWN_EVERY = 20  # pause after every N tournaments
 COOLDOWN_SECONDS = 60  # cooldown duration
 
 
+def execute_script(
+    browser: webdriver.Chrome,
+    script: str,
+) -> object:
+    return browser.execute_script(script)  # type: ignore[no-untyped-call]
+
+
 def wait_for_page_load(browser: webdriver.Chrome, timeout: int = 30) -> None:
     WebDriverWait(browser, timeout).until(
-        lambda d: d.execute_script("return document.readyState") == "complete"
+        lambda d: execute_script(browser, "return document.readyState") == "complete"
     )
 
 
@@ -67,7 +74,7 @@ def collect_archived_tournaments(
 
     actions = ActionChains(browser)
 
-    collected_links = set()
+    collected_links: set[str] = set()
     start_time = time.time()
     timeout_seconds = timeout_minutes * 60
 
@@ -118,7 +125,7 @@ def collect_archived_tournaments(
     return list(collected_links)
 
 
-def main():
+def main() -> None:
     browser = webdriver.Chrome()
 
     tournament_links = collect_archived_tournaments(browser)

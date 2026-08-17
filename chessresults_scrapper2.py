@@ -4,7 +4,7 @@ import time
 from pathlib import Path
 
 import requests
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Tag
 
 DOWNLOAD_DIR = Path.home() / "Dokumenty" / "chess-results_pgns"
 CR_URL = "https://chess-results.com/"
@@ -12,12 +12,31 @@ PARTIE_SUCHE_URL = "https://s2.chess-results.com/PartieSuche.aspx"
 
 
 def get_hidden_fields(soup: BeautifulSoup) -> dict[str, str]:
-    hidden_fields = {}
+    hidden_fields: dict[str, str] = {}
+
     for field in ["__VIEWSTATE", "__VIEWSTATEGENERATOR", "__EVENTVALIDATION"]:
         element = soup.find("input", {"name": field})
-        if element:
-            hidden_fields[field] = element.get("value", "")
+
+        if isinstance(element, Tag):
+            value = element.get("value")
+            if isinstance(value, str):
+                hidden_fields[field] = value
+
     return hidden_fields
+
+
+def get_input_value(soup: BeautifulSoup, name: str) -> str:
+    element = soup.find("input", {"name": name})
+
+    if not isinstance(element, Tag):
+        raise ValueError(f"Missing input field: {name}")
+
+    value = element.get("value", "")
+
+    if not isinstance(value, str):
+        raise ValueError(f"Invalid value for input field: {name}")
+
+    return value
 
 
 def main(compare_downloaded: bool = False) -> None:
@@ -43,11 +62,9 @@ def main(compare_downloaded: bool = False) -> None:
     if not soup:
         raise ValueError("Cannot parse html")
 
-    viewstate = soup.find("input", {"name": "__VIEWSTATE"}).get("value", "")
-    viewstate_generator = soup.find("input", {"name": "__VIEWSTATEGENERATOR"}).get(
-        "value", ""
-    )
-    eventvalidation = soup.find("input", {"name": "__EVENTVALIDATION"}).get("value", "")
+    viewstate = get_input_value(soup, "__VIEWSTATE")
+    viewstate_generator = get_input_value(soup, "__VIEWSTATEGENERATOR")
+    eventvalidation = get_input_value(soup, "__EVENTVALIDATION")
 
     data = {
         "__VIEWSTATE": viewstate,

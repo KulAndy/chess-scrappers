@@ -41,7 +41,6 @@ def download_pgn(browser: webdriver.Chrome, data: str) -> None:
         btn_download = WebDriverWait(browser, 10).until(
             EC.element_to_be_clickable((By.ID, "P1_linkbutton_DownLoadPGN"))
         )
-        browser.execute_script("arguments[0].scrollIntoView(true);", btn_download)
         time.sleep(0.5)
         btn_download.click()
     except Exception:
@@ -306,11 +305,11 @@ def correct_date_from_cr(
 
 
 def main(
-        *,
-        players: bool = False,
-        last_tournaments: bool = False,
-        last_month: bool = True,
-        entire: bool = False,
+    *,
+    players: bool = False,
+    last_tournaments: bool = False,
+    last_month: bool = True,
+    entire: bool = False,
 ) -> None:
     options = Options()
     options.add_experimental_option(
@@ -333,7 +332,9 @@ def main(
 
     if last_month:
         first_day_current_month = date.today().replace(day=1)
-        first_day_prev_month = (first_day_current_month - timedelta(days=1)).replace(day=1)
+        first_day_prev_month = (first_day_current_month - timedelta(days=1)).replace(
+            day=1
+        )
         scrap_tournament_rage(browser, first_day_prev_month, today)
 
     if entire:
@@ -366,33 +367,25 @@ def main(
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--players",
-        action="store_true",
-        help="Scrap all players by FIDE ID"
+        "--players", action="store_true", help="Scrap all players by FIDE ID"
     )
 
     parser.add_argument(
         "--last_tournaments",
         action="store_true",
-        help="Scrap tournaments marked as with games"
+        help="Scrap tournaments marked as with games",
     )
 
     parser.add_argument(
-        "--last_month",
-        action="store_true",
-        help="Scrap from last month"
+        "--last_month", action="store_true", help="Scrap from last month"
     )
 
-    parser.add_argument(
-        "--entire",
-        action="store_true",
-        help="Scrap all games"
-    )
+    parser.add_argument("--entire", action="store_true", help="Scrap all games")
     args = parser.parse_args()
 
     main(
         players=args.players,
         last_tournaments=args.last_tournaments,
         last_month=args.last_month,
-        entire=args.entire
+        entire=args.entire,
     )

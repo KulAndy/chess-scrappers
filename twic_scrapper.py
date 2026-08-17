@@ -1,26 +1,30 @@
 import os
-from datetime import datetime
+from datetime import date, datetime
 from pathlib import Path
 from zipfile import ZipFile
 
 import requests
 
 
-def calculate_date_difference(start_date, end_date):
+def calculate_date_difference(start_date: date, end_date: date) -> int:
     delta = end_date - start_date
     return delta.days
 
 
-def ensure_directories_exist(*dirs):
+def ensure_directories_exist(*dirs: Path) -> None:
     for directory in dirs:
         os.makedirs(directory, exist_ok=True)
 
 
-def download_file(url, dest_path):
+def download_file(url: str, dest_path: Path) -> None:
     if not dest_path.exists():
         print(f"Downloading: {url}")
         headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36"
+            "User-Agent": (
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                "AppleWebKit/537.36 (KHTML, like Gecko) "
+                "Chrome/114.0.0.0 Safari/537.36"
+            )
         }
         response = requests.get(url, headers=headers, stream=True)
         if response.status_code == 200:
@@ -34,7 +38,7 @@ def download_file(url, dest_path):
         print(f"File already exists: {dest_path}")
 
 
-def unzip_file(zip_path, extract_dir):
+def unzip_file(zip_path: Path, extract_dir: Path) -> None:
     try:
         with ZipFile(zip_path, "r") as zip_ref:
             zip_ref.extractall(extract_dir)

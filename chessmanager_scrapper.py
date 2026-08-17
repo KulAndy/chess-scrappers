@@ -3,6 +3,7 @@ import re
 import time
 import traceback
 from io import TextIOWrapper
+from os import PathLike
 
 import undetected_chromedriver as uc
 from selenium.webdriver.chrome.options import Options
@@ -214,7 +215,7 @@ countries = [
 ]
 
 
-def process_tournament(tournament: str, output: TextIOWrapper):
+def process_tournament(tournament: str, output: TextIOWrapper) -> None:
     browser.get(tournament)
     time.sleep(3)
     try:
@@ -250,7 +251,7 @@ def process_tournament(tournament: str, output: TextIOWrapper):
         traceback.print_exc()
 
 
-def process_pseudo_human(output: TextIOWrapper):
+def process_pseudo_human(output: TextIOWrapper) -> None:
     for country in countries:
         try:
             browser.get(
@@ -289,7 +290,7 @@ def process_pseudo_human(output: TextIOWrapper):
             traceback.print_exc()
 
 
-def process_bot(output: TextIOWrapper):
+def process_bot(output: TextIOWrapper) -> None:
     browser.get("https://www.chessmanager.com/en-us/tournaments/sitemap.xml")
 
     locs = browser.find_elements(By.XPATH, "//*[local-name()='loc']")
@@ -299,7 +300,7 @@ def process_bot(output: TextIOWrapper):
         process_tournament(url, output)
 
 
-def main():
+def main() -> None:
     with open("chessmanager.pgn", "a") as output:
         process_bot(output)
 
@@ -315,7 +316,7 @@ def main():
     browser.quit()
 
 
-def check_for_crdownload_files(folder_path):
+def check_for_crdownload_files(folder_path: str) -> bool:
     crdownload_files = [f for f in os.listdir(folder_path) if f.endswith(".crdownload")]
     return len(crdownload_files) > 0
 

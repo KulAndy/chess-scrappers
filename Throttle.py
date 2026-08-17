@@ -4,18 +4,18 @@ from threading import Lock
 
 class Throttle:
     """
-    klasa do dławienia programu
+    Klasa do dławienia programu.
     """
 
-    def __init__(self, rate):
+    def __init__(self, rate: int) -> None:
         self.__consume_lock = Lock()
         self.rate = rate
-        self.tokens = 0
-        self.last = None
+        self.tokens: float = 0.0
+        self.last: float | None = None
 
-    def consume(self, amount=1):
+    def consume(self, amount: int = 1) -> int:
         """
-        na podstawie liczby tokenów określa się czy można działać, czy czekać
+        Na podstawie liczby tokenów określa się, czy można działać, czy czekać.
         """
         with self.__consume_lock:
             now = time.time()

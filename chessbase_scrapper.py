@@ -4,7 +4,7 @@ import requests
 from bs4 import BeautifulSoup
 
 
-def main():
+def main() -> None:
     url = "https://live.chessbase.com/en/History"
     response = requests.get(url)
 

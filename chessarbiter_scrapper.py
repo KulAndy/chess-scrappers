@@ -4,7 +4,6 @@ import re
 import sys
 import time
 import traceback
-from argparse import ArgumentError
 from datetime import datetime
 
 # kolejki są fifo
@@ -46,7 +45,7 @@ def manual_download(
     select = browser.find_element(By.TAG_NAME, "select")
     select.send_keys("100")
 
-    games = []
+    games: list[str] = []
 
     # linki z grami
     pages = browser.find_elements(
@@ -58,12 +57,14 @@ def manual_download(
         pages = browser.find_elements(
             By.CSS_SELECTOR, "#table_pgn_paginate > span:nth-child(3) > span"
         )
-        browser.execute_script("arguments[0].click();", pages[i])
+        pages[i].click()
         page_links = browser.find_elements(
             By.CSS_SELECTOR, "#table_pgn > tbody > tr > td > a"
         )
         for link in page_links:
-            games.append(link.get_attribute("href"))
+            href = link.get_attribute("href")
+            if href is not None:
+                games.append(href)
 
     for game in games:
         try:
@@ -109,8 +110,12 @@ def search_pgn(
     year: int,
 ) -> list[str]:
     """szukanie pgnów"""
-    found_links = []
-    href = tournament["href"]
+    found_links: list[str] = []
+    href = tournament.get("href")
+
+    if not isinstance(href, str):
+        return found_links
+
     JS_PATTERN = r"</?\w+|function|if|var|let|;|\(.*\)"
     EMPTY_YEAR_PATTERN = r"(1899|\?\?\?\?)[.-].{1,2}[.-].{1,2}"
     if "https://chessarbiter.com/turnieje/open.php?" in href:
@@ -147,7 +152,7 @@ def search_pgn(
                                     remote_file.text,
                                 ):
                                     found_links.append(remote_file.text)
-                                raise ArgumentError("Nie znaleziono roku gry")
+                                raise ValueError("Nie znaleziono roku gry")
                             found_links.append(
                                 re.sub(
                                     EMPTY_YEAR_PATTERN,
@@ -217,15 +222,21 @@ def search_pgn(
 
 
 def worker(
-    work_queue: Queue,
-    results_queue: Queue,
+    work_queue: Queue[bs4.element.Tag],
+    results_queue: Queue[Exception | list[str]],
     throttle: Throttle,
     choose_browser: str,
     year: int,
 ) -> None:
     # switch-case w pythonie
     try:
-        browser = None
+        browser: (
+            webdriver.Chrome
+            | webdriver.Firefox
+            | webdriver.Edge
+            | webdriver.Safari
+            | None
+        ) = None
         match choose_browser:
             case "Chrome":
                 browser = webdriver.Chrome()
@@ -278,27 +289,27 @@ def main() -> None:
     print("Sprawdzanie dostępnych przeglądarek")
     print("Chrome", end="")
     try:
-        options = ChromeOptions()
-        options.add_argument("--headless")
-        options.add_argument("--no-sandbox")
-        options.add_argument("--disable-gpu")
-        options.add_argument("start-maximized")
-        options.add_argument("disable-infobars")
-        options.add_argument("--disable-extensions")
-        browser = webdriver.Chrome(options=options)
+        chrome_options = ChromeOptions()
+        chrome_options.add_argument("--headless")
+        chrome_options.add_argument("--no-sandbox")
+        chrome_options.add_argument("--disable-gpu")
+        chrome_options.add_argument("start-maximized")
+        chrome_options.add_argument("disable-infobars")
+        chrome_options.add_argument("--disable-extensions")
+        chrome_browser = webdriver.Chrome(options=chrome_options)
         browsers.append("Chrome")
-        browser.quit()
+        chrome_browser.quit()
         print(BROWSER_DETECTED)
     except Exception:
         print(BROWSER_NOT_DETECTED)
 
     print("Firefox", end="")
     try:
-        options = FirefoxOptions()
-        options.add_argument("--headless")
-        browser = webdriver.Firefox(options=options)
+        firefox_options = FirefoxOptions()
+        firefox_options.add_argument("--headless")
+        firefox_browser = webdriver.Firefox(options=firefox_options)
         browsers.append("Firefox")
-        browser.quit()
+        firefox_browser.quit()
         print(BROWSER_DETECTED)
     except Exception:
         print(BROWSER_NOT_DETECTED)
@@ -328,7 +339,6 @@ def main() -> None:
         except Exception:
             print(BROWSER_NOT_DETECTED)
 
-    del browser
     if len(browsers) == 0:
         sys.exit(
             f"""Brak przeglądarek do sterowania
@@ -404,9 +414,9 @@ def main() -> None:
             tournaments = main_soup.select("#zawartosc > table > tr > td > a")
 
             # kolejka zadań
-            work_queue = Queue()
+            work_queue: Queue[bs4.element.Tag] = Queue()
             # kolejka wyników
-            results_queue = Queue()
+            results_queue: Queue[Exception | list[str]] = Queue()
 
             # throttling choć trzeba samemu sprawdźić czy nie będzie za dużo zapytań
             throttle = Throttle(3)
@@ -441,26 +451,35 @@ def main() -> None:
                     continue
 
                 # niepuste wyniki
-                result = filter(lambda x: len(x) != 0, result)
+                games = filter(lambda x: len(x) != 0, result)
                 # zawierające tagi pgn
-                result = filter(lambda x: re.search(r'\[\w+ ".*"]', x), result)
+                games = filter(
+                    lambda x: re.search(r'\[\w+ ".*"]', x) is not None,
+                    games,
+                )
                 # zawierające notacje algebraiczną
-                result = filter(
-                    lambda x: re.search(
-                        r"(([1-9]\d*\.)? ?(([RBNQK]?[a-h1-8]?x?[a-h][1-8][+#]?|0-0-0|O-O-O|0-0|O-O) ?({.*})? ?){,"
-                        r"2})+|(0-1|1-0|1/2-1/2|0,5-0,5|0.5-0.5|\*)|^\*$",
-                        x,
+                games = filter(
+                    lambda x: (
+                        re.search(
+                            r"(([1-9]\d*\.)? ?(([RBNQK]?[a-h1-8]?x?[a-h][1-8][+#]?|0-0-0|O-O-O|0-0|O-O) ?({.*})? ?){,"
+                            r"2})+|(0-1|1-0|1/2-1/2|0,5-0,5|0.5-0.5|\*)|^\*$",
+                            x,
+                        )
+                        is not None
                     ),
-                    result,
+                    games,
                 )
                 # nie xml
-                result = filter(lambda x: not re.search("</?.*>|&", x), result)
+                games = filter(
+                    lambda x: re.search("</?.*>|&", x) is None,
+                    games,
+                )
 
-                games = "\n".join(result)
+                games_text = "\n".join(games)
                 # zapis do pliku
                 with open(FILENAME, "a") as file:
-                    regex = r"Date \"(None|(\?\?\?\?|1899)\.\?\?\.\?\?)\""
-                    file.write(re.sub(regex, f"{i}.??.??", games))
+                    regex = r'Date "(None|(\?\?\?\?|1899)\.\?\?\.\?\?)"'
+                    file.write(re.sub(regex, f"{i}.??.??", games_text))
 
         except Exception as err:
             print(err)
