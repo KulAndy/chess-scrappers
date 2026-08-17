@@ -56,7 +56,7 @@ def process_tournament_links(browser: webdriver.Chrome) -> None:
     links = browser.find_elements(By.TAG_NAME, "a")
     transmission_ids = set()
     for link in links:
-        href: str | None = link.get_attribute("href") # type: ignore[no-untyped-call]
+        href: str | None = link.get_attribute("href")  # type: ignore[no-untyped-call]
         if href:
             match = re.search(r"/tnr(\d+)\.aspx", href)
             if match:

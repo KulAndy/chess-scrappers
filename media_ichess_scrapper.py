@@ -90,7 +90,7 @@ def collect_archived_tournaments(
 
         # === HUMAN SCROLLING ===
         for _ in range(6):
-            actions.send_keys(Keys.PAGE_DOWN).perform() # type: ignore[no-untyped-call]
+            actions.send_keys(Keys.PAGE_DOWN).perform()  # type: ignore[no-untyped-call]
             time.sleep(random.uniform(0.4, 0.8))
 
         time.sleep(2.5)  # allow network fetch

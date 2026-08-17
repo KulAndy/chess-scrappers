@@ -223,13 +223,13 @@ def process_tournament(tournament: str, output: TextIOWrapper) -> None:
             link.get_attribute("href")
             for link in links
             if link.get_attribute("href") is not None
-               and "lichess.org/broadcast/" in link.get_attribute("href")
+            and "lichess.org/broadcast/" in link.get_attribute("href")
         ]
         livechess_links = [
             link.get_attribute("href")
             for link in links
             if link.get_attribute("href") is not None
-               and "view.livechesscloud.com" in link.get_attribute("href")
+            and "view.livechesscloud.com" in link.get_attribute("href")
         ]
         for lichess_link in lichess_links:
             print("lichess: " + lichess_link)
