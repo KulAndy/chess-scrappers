@@ -16,6 +16,12 @@ def lichess_download(link: str) -> str:
         link = res.url
     parts = urlsplit(link)
     link = urlunsplit((parts.scheme, parts.netloc, parts.path, "", ""))
+    match = re.search(
+        r"^https://lichess\.org/team/",
+        link,
+    )
+    if match:
+        return ""
 
     pgn = ""
     with download_semaphore:
