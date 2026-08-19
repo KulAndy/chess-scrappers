@@ -1,7 +1,7 @@
 import re
 from threading import Semaphore
 from typing import Any
-from urllib.parse import urlparse
+from urllib.parse import urlparse, urlsplit, urlunsplit
 
 import requests
 from unidecode import unidecode
@@ -14,6 +14,8 @@ def lichess_download(link: str) -> str:
     res = requests.get(link, timeout=TIMEOUT)
     if res.ok:
         link = res.url
+    parts = urlsplit(link)
+    link = urlunsplit((parts.scheme, parts.netloc, parts.path, "", ""))
 
     pgn = ""
     with download_semaphore:
