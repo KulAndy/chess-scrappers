@@ -301,7 +301,7 @@ def process_bot(output: TextIOWrapper) -> None:
 
 def main() -> None:
     with open("chessmanager.pgn", "a") as output:
-        process_pseudo_human(output)
+        process_bot(output)
 
         while check_for_crdownload_files(download_directory):
             print("Waiting for downloads to complete...")
