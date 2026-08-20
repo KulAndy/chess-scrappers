@@ -1,0 +1,339 @@
+lock-version = "1.0"
+created-by = "pip"
+
+[[packages]]
+name = "attrs"
+version = "26.1.0"
+
+[[packages.wheels]]
+name = "attrs-26.1.0-py3-none-any.whl"
+url = "https://files.pythonhosted.org/packages/64/b4/17d4b0b2a2dc85a6df63d1157e028ed19f90d4cd97c36717afef2bc2f395/attrs-26.1.0-py3-none-any.whl"
+
+[packages.wheels.hashes]
+sha256 = "c647aa4a12dfbad9333ca4e71fe62ddc36f4e63b2d260a37a8b83d2f043ac309"
+
+[[packages]]
+name = "beautifulsoup4"
+version = "4.15.0"
+
+[[packages.wheels]]
+name = "beautifulsoup4-4.15.0-py3-none-any.whl"
+url = "https://files.pythonhosted.org/packages/88/c6/92fcd42f1ba33e1184263f25bfabf3d27c383410470f169e4b8163bf9c17/beautifulsoup4-4.15.0-py3-none-any.whl"
+
+[packages.wheels.hashes]
+sha256 = "d6f88de62e1d4e38ecb1077eb9724cd0eff29d2a08ca16a401e9b9e93f117cf9"
+
+[[packages]]
+name = "certifi"
+version = "2026.7.22"
+
+[[packages.wheels]]
+name = "certifi-2026.7.22-py3-none-any.whl"
+url = "https://files.pythonhosted.org/packages/0b/a7/71ac2cff56fec219ed242bb11b8efb69fcc4bec75db06fb7bfe35de520e6/certifi-2026.7.22-py3-none-any.whl"
+
+[packages.wheels.hashes]
+sha256 = "62f22742b58a1a33014a2b6b706588a8d7e2a88ae7bd1a6ebe8c992928483775"
+
+[[packages]]
+name = "charset-normalizer"
+version = "3.5.1"
+
+[[packages.wheels]]
+name = "charset_normalizer-3.5.1-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl"
+url = "https://files.pythonhosted.org/packages/6f/89/bb5108dc6c3651dca963f2b0a3ba19bbcb370c94e1b6d3e0e844a58e6dca/charset_normalizer-3.5.1-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl"
+
+[packages.wheels.hashes]
+sha256 = "b9af956078716df40d985fb0dfeb2c2120c5ca92ba4ff4b388acfd01cdc14d08"
+
+[[packages]]
+name = "chess"
+version = "1.11.2"
+
+[packages.sdist]
+name = "chess-1.11.2.tar.gz"
+url = "https://files.pythonhosted.org/packages/93/09/7d04d7581ae3bb8b598017941781bceb7959dd1b13e3ebf7b6a2cd843bc9/chess-1.11.2.tar.gz"
+
+[packages.sdist.hashes]
+sha256 = "a8b43e5678fdb3000695bdaa573117ad683761e5ca38e591c4826eba6d25bb39"
+
+[[packages]]
+name = "chess-scrappers"
+
+[packages.directory]
+path = "."
+editable = true
+
+[[packages]]
+name = "h11"
+version = "0.16.0"
+
+[[packages.wheels]]
+name = "h11-0.16.0-py3-none-any.whl"
+url = "https://files.pythonhosted.org/packages/04/4b/29cac41a4d98d144bf5f6d33995617b185d14b22401f75ca86f384e87ff1/h11-0.16.0-py3-none-any.whl"
+
+[packages.wheels.hashes]
+sha256 = "63cf8bbe7522de3bf65932fda1d9c2772064ffb3dae62d55932da54b31cb6c86"
+
+[[packages]]
+name = "idna"
+version = "3.19"
+
+[[packages.wheels]]
+name = "idna-3.19-py3-none-any.whl"
+url = "https://files.pythonhosted.org/packages/57/b0/0e52c878c53f245edd3a11020f20979b3f490f245af532c7cae3027754b5/idna-3.19-py3-none-any.whl"
+
+[packages.wheels.hashes]
+sha256 = "815e7be7a7806d54abb586dc943addc79e8b2ee16915059658cbeff4b1b43bf4"
+
+[[packages]]
+name = "lxml"
+version = "6.1.1"
+
+[[packages.wheels]]
+name = "lxml-6.1.1-cp312-cp312-manylinux_2_26_x86_64.manylinux_2_28_x86_64.whl"
+url = "https://files.pythonhosted.org/packages/08/f6/af32e23e563971ffb0fb86be52bc5be5c2c118858ffc119bf6a9039b173d/lxml-6.1.1-cp312-cp312-manylinux_2_26_x86_64.manylinux_2_28_x86_64.whl"
+
+[packages.wheels.hashes]
+sha256 = "ebe6af670449830d6d9b752c256a983291c766a1365ba5d5460048f9e33a7818"
+
+[[packages]]
+name = "outcome"
+version = "1.3.0.post0"
+
+[[packages.wheels]]
+name = "outcome-1.3.0.post0-py2.py3-none-any.whl"
+url = "https://files.pythonhosted.org/packages/55/8b/5ab7257531a5d830fc8000c476e63c935488d74609b50f9384a643ec0a62/outcome-1.3.0.post0-py2.py3-none-any.whl"
+
+[packages.wheels.hashes]
+sha256 = "e771c5ce06d1415e356078d3bdd68523f284b4ce5419828922b6871e65eda82b"
+
+[[packages]]
+name = "packaging"
+version = "26.3"
+
+[[packages.wheels]]
+name = "packaging-26.3-py3-none-any.whl"
+url = "https://files.pythonhosted.org/packages/63/34/ba1c580383c9eada3711951fef0795c80b829a078d72188184bcab9dd527/packaging-26.3-py3-none-any.whl"
+
+[packages.wheels.hashes]
+sha256 = "d7193f7c8e4e93f444fde0262bf90af30e16fa0ad0ad44cb553c87339b23cd1c"
+
+[[packages]]
+name = "pyinputplus"
+version = "0.2.12"
+
+[packages.sdist]
+name = "PyInputPlus-0.2.12.tar.gz"
+url = "https://files.pythonhosted.org/packages/6a/d4/afb45ed88323ef6d3c4cbf48e9c1bac38059a168b8392a56f3b8f9d1d39c/PyInputPlus-0.2.12.tar.gz"
+
+[packages.sdist.hashes]
+sha256 = "3a86b03dc6d003fec7dc627ad175cacaaf6e14a6a3b13b34c8fe6f5d01506231"
+
+[[packages]]
+name = "pysimplevalidate"
+version = "0.2.12"
+
+[packages.sdist]
+name = "PySimpleValidate-0.2.12.tar.gz"
+url = "https://files.pythonhosted.org/packages/0b/54/8fd99436073dbdbba719e08e1b7e5f3f36a8cc9e518612e1b97e4806d2ce/PySimpleValidate-0.2.12.tar.gz"
+
+[packages.sdist.hashes]
+sha256 = "645d24bdca17ad4c40658f3aa0bd5c1aa1688ba0c02ba75c5ed2cb3b8abaaa19"
+
+[[packages]]
+name = "pysocks"
+version = "1.7.1"
+
+[[packages.wheels]]
+name = "PySocks-1.7.1-py3-none-any.whl"
+url = "https://files.pythonhosted.org/packages/8d/59/b4572118e098ac8e46e399a1dd0f2d85403ce8bbaad9ec79373ed6badaf9/PySocks-1.7.1-py3-none-any.whl"
+
+[packages.wheels.hashes]
+sha256 = "2725bd0a9925919b9b51739eea5f9e2bae91e83288108a9ad338b2e3a4435ee5"
+
+[[packages]]
+name = "requests"
+version = "2.34.2"
+
+[[packages.wheels]]
+name = "requests-2.34.2-py3-none-any.whl"
+url = "https://files.pythonhosted.org/packages/a0/f4/c67b0b3f1b9245e8d266f0f112c500d50e5b4e83cb6f3b71b6528104182a/requests-2.34.2-py3-none-any.whl"
+
+[packages.wheels.hashes]
+sha256 = "2a0d60c172f83ac6ab31e4554906c0f3b3588d37b5cb939b1c061f4907e278e0"
+
+[[packages]]
+name = "selenium"
+version = "4.47.0"
+
+[[packages.wheels]]
+name = "selenium-4.47.0-py3-none-any.whl"
+url = "https://files.pythonhosted.org/packages/e4/0b/652575986d2ed03d29103d8574580a03aefe50d243d225b441e2375bd0f6/selenium-4.47.0-py3-none-any.whl"
+
+[packages.wheels.hashes]
+sha256 = "2eac6b8e7c017f57ecc40820383da8881a6fd7a90ea555c1b0af322f2344b347"
+
+[[packages]]
+name = "sniffio"
+version = "1.3.1"
+
+[[packages.wheels]]
+name = "sniffio-1.3.1-py3-none-any.whl"
+url = "https://files.pythonhosted.org/packages/e9/44/75a9c9421471a6c4805dbf2356f7c181a29c1879239abab1ea2cc8f38b40/sniffio-1.3.1-py3-none-any.whl"
+
+[packages.wheels.hashes]
+sha256 = "2f6da418d1f1e0fddd844478f41680e794e6051915791a034ff65e5f100525a2"
+
+[[packages]]
+name = "sortedcontainers"
+version = "2.4.0"
+
+[[packages.wheels]]
+name = "sortedcontainers-2.4.0-py2.py3-none-any.whl"
+url = "https://files.pythonhosted.org/packages/32/46/9cb0e58b2deb7f82b84065f37f3bffeb12413f947f9388e4cac22c4621ce/sortedcontainers-2.4.0-py2.py3-none-any.whl"
+
+[packages.wheels.hashes]
+sha256 = "a163dcaede0f1c021485e957a39245190e74249897e2ae4b2aa38595db237ee0"
+
+[[packages]]
+name = "soupsieve"
+version = "2.9.2"
+
+[[packages.wheels]]
+name = "soupsieve-2.9.2-py3-none-any.whl"
+url = "https://files.pythonhosted.org/packages/eb/dc/ad025c1ee131eba60c69f4dd5779b18fcf1e6b21a343e2162a84d5d133c7/soupsieve-2.9.2-py3-none-any.whl"
+
+[packages.wheels.hashes]
+sha256 = "8089a26fd974ca7a1f30276d3d8492ab266ab15af581642dfe8aa162e0c1c823"
+
+[[packages]]
+name = "stdiomask"
+version = "0.0.6"
+
+[packages.sdist]
+name = "stdiomask-0.0.6.tar.gz"
+url = "https://files.pythonhosted.org/packages/47/a2/f72fd263cecb11ed4cc96bd31608359e1df30349c665674e5c35ea9a72d6/stdiomask-0.0.6.tar.gz"
+
+[packages.sdist.hashes]
+sha256 = "c1e47069ead9e10bda150a26f7922ca01d2adc503042a9d7acf64877a2b9a3a6"
+
+[[packages]]
+name = "trio"
+version = "0.34.0"
+
+[[packages.wheels]]
+name = "trio-0.34.0-py3-none-any.whl"
+url = "https://files.pythonhosted.org/packages/77/1f/555f1364bed52a92a864181962b77f1b15adadeacf23b86105324363e461/trio-0.34.0-py3-none-any.whl"
+
+[packages.wheels.hashes]
+sha256 = "6c7c9f49917694dcdcd5f67abd168df5599eca480d61f29854d17a61a75c2f05"
+
+[[packages]]
+name = "trio-websocket"
+version = "0.12.2"
+
+[[packages.wheels]]
+name = "trio_websocket-0.12.2-py3-none-any.whl"
+url = "https://files.pythonhosted.org/packages/c7/19/eb640a397bba49ba49ef9dbe2e7e5c04202ba045b6ce2ec36e9cadc51e04/trio_websocket-0.12.2-py3-none-any.whl"
+
+[packages.wheels.hashes]
+sha256 = "df605665f1db533f4a386c94525870851096a223adcb97f72a07e8b4beba45b6"
+
+[[packages]]
+name = "types-selenium"
+version = "3.141.9"
+
+[[packages.wheels]]
+name = "types_selenium-3.141.9-py3-none-any.whl"
+url = "https://files.pythonhosted.org/packages/4b/05/67524387f0b4968ff83462e8526913e563d51d4c0bacbb3a3095d9b11e46/types_selenium-3.141.9-py3-none-any.whl"
+
+[packages.wheels.hashes]
+sha256 = "83606e061154bc2241d6eba964263f9cf1dcaa6c7dfff0bb10d3abcfbdaefdc7"
+
+[[packages]]
+name = "typing-extensions"
+version = "4.16.0"
+
+[[packages.wheels]]
+name = "typing_extensions-4.16.0-py3-none-any.whl"
+url = "https://files.pythonhosted.org/packages/49/d3/b8441a820a491ddfc024b0b0cf0393375b75ea13866d9c66727e54c2fc80/typing_extensions-4.16.0-py3-none-any.whl"
+
+[packages.wheels.hashes]
+sha256 = "481caa481374e813c1b176ada14e97f1f67a4539ce9cfeb3f350d78d6370c2e8"
+
+[[packages]]
+name = "undetected-chromedriver"
+version = "3.5.5"
+
+[packages.sdist]
+name = "undetected-chromedriver-3.5.5.tar.gz"
+url = "https://files.pythonhosted.org/packages/1f/98/7ab46625ce2317756e4e857fe6ac24b6378c3e8f477da26c95226ed8ccb7/undetected-chromedriver-3.5.5.tar.gz"
+
+[packages.sdist.hashes]
+sha256 = "9f945e1435005247abe17de316bcfda85b284a4177fd5f25167c78ced33b65ec"
+
+[[packages]]
+name = "unidecode"
+version = "1.4.0"
+
+[[packages.wheels]]
+name = "Unidecode-1.4.0-py3-none-any.whl"
+url = "https://files.pythonhosted.org/packages/8f/b7/559f59d57d18b44c6d1250d2eeaa676e028b9c527431f5d0736478a73ba1/Unidecode-1.4.0-py3-none-any.whl"
+
+[packages.wheels.hashes]
+sha256 = "c3c7606c27503ad8d501270406e345ddb480a7b5f38827eafe4fa82a137f0021"
+
+[[packages]]
+name = "urllib3"
+version = "2.7.0"
+
+[[packages.wheels]]
+name = "urllib3-2.7.0-py3-none-any.whl"
+url = "https://files.pythonhosted.org/packages/7f/3e/5db95bcf282c52709639744ca2a8b149baccf648e39c8cc87553df9eae0c/urllib3-2.7.0-py3-none-any.whl"
+
+[packages.wheels.hashes]
+sha256 = "9fb4c81ebbb1ce9531cce37674bbc6f1360472bc18ca9a553ede278ef7276897"
+
+[[packages]]
+name = "websocket-client"
+version = "1.9.0"
+
+[[packages.wheels]]
+name = "websocket_client-1.9.0-py3-none-any.whl"
+url = "https://files.pythonhosted.org/packages/34/db/b10e48aa8fff7407e67470363eac595018441cf32d5e1001567a7aeba5d2/websocket_client-1.9.0-py3-none-any.whl"
+
+[packages.wheels.hashes]
+sha256 = "af248a825037ef591efbf6ed20cc5faa03d3b47b9e5a2230a529eeee1c1fc3ef"
+
+[[packages]]
+name = "websockets"
+version = "17.0.1"
+
+[[packages.wheels]]
+name = "websockets-17.0.1-cp312-cp312-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl"
+url = "https://files.pythonhosted.org/packages/42/28/9ec976c16d63cc51c28dfec74b66854048c0b8b6579946e902f91b69e8bf/websockets-17.0.1-cp312-cp312-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl"
+
+[packages.wheels.hashes]
+sha256 = "f47b0815af3948ec6a440b3afa02f05b18cc0939549e91b5c677b5d9c2c8472a"
+
+[[packages]]
+name = "wsproto"
+version = "1.3.2"
+
+[[packages.wheels]]
+name = "wsproto-1.3.2-py3-none-any.whl"
+url = "https://files.pythonhosted.org/packages/a4/f5/10b68b7b1544245097b2a1b8238f66f2fc6dcaeb24ba5d917f52bd2eed4f/wsproto-1.3.2-py3-none-any.whl"
+
+[packages.wheels.hashes]
+sha256 = "61eea322cdf56e8cc904bd3ad7573359a242ba65688716b0710a5eb12beab584"
+
+[[packages]]
+name = "zstandard"
+version = "0.25.0"
+
+[[packages.wheels]]
+name = "zstandard-0.25.0-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl"
+url = "https://files.pythonhosted.org/packages/53/60/7be26e610767316c028a2cbedb9a3beabdbe33e2182c373f71a1c0b88f36/zstandard-0.25.0-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl"
+
+[packages.wheels.hashes]
+sha256 = "5a56ba0db2d244117ed744dfa8f6f5b366e14148e00de44723413b2f3938a902"
