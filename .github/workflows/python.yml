@@ -30,8 +30,11 @@ jobs:
         with:
           enable-cache: true
 
+      - name: Check lockfile
+        run: uv lock --check
+
       - name: Install dependencies
-        run: uv sync --locked
+        run: uv sync --locked --all-extras
 
       - name: Ruff lint
         run: uv run ruff check .
@@ -40,4 +43,4 @@ jobs:
         run: uv run ruff format --check .
 
       - name: Type check
-        run: uv run mypy . --explicit-package
+        run: uv run mypy . --explicit-package --config-file pyproject.toml
