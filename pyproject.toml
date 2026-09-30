@@ -13,25 +13,25 @@ description = "Chess pgn scrappers for chessarbiter, chessmanager, chess-results
 readme = "README.md"
 
 dependencies = [
-    "beautifulsoup4==4.15.0",
-    "chess==1.11.2",
-    "lxml==6.1.1",
-    "packaging==26.3",
-    "PyInputPlus==0.2.12",
-    "requests==2.34.2",
-    "selenium==4.47.0",
-    "types-selenium==3.141.9",
-    "typing_extensions==4.16.0",
-    "undetected-chromedriver==3.5.5",
-    "Unidecode==1.4.0",
-    "zstandard==0.25.0",
+    "beautifulsoup4>=4.15,<5",
+    "chess>=1.11,<2",
+    "lxml>=6.1,<7",
+    "packaging>=26,<27",
+    "PyInputPlus>=0.2,<1",
+    "requests>=2.34,<3",
+    "selenium>=4.47,<5",
+    "types-selenium>=3.141,<4",
+    "typing_extensions>=4.16,<5",
+    "undetected-chromedriver>=3.5,<4",
+    "Unidecode>=1.4,<2",
+    "zstandard>=0.25,<1",
 ]
 
-[project.optional-dependencies]
+[dependency-groups]
 dev = [
-    "mypy==2.3.1",
-    "mypy_extensions==1.1.0",
-    "ruff==0.16.3"
+    "mypy>=2.3.1",
+    "mypy_extensions>=1.1.0",
+    "ruff>=0.16.3",
 ]
 
 [tool.setuptools]
