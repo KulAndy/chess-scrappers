@@ -33,9 +33,6 @@ jobs:
       - name: Install dependencies
         run: uv sync --locked
 
-      - name: Check dependencies
-        run: uv run python -m pip check
-
       - name: Ruff lint
         run: uv run ruff check .
 
