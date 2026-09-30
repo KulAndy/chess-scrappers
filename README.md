@@ -9,3 +9,14 @@
 * `chessresults_scrapper` - get games from [chess results](https://chess-results.com/)
 * `media_ichess_scrapper` - get games from [chess results]([https://chess-results.com](https://media.idchess.com/)](https://media.idchess.com/en/tournaments/archived)
 * `twic_scrapper` - get games from [twic](https://theweekinchess.com/?go)
+
+
+<!-- Security scan triggered at 2026-08-31 16:21:36 -->
+
+<!-- Security scan triggered at 2026-08-31 16:25:18 -->
+
+<!-- Security scan triggered at 2026-08-31 18:15:11 -->
+
+<!-- Security scan triggered at 2026-09-02 06:31:03 -->
+
+<!-- Security scan triggered at 2026-09-08 02:04:38 -->
